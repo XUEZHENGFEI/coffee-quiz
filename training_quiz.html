@@ -312,6 +312,65 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
     $('modalOk').onclick = function(){ closeModal(); if(onOk) onOk(); };
     $('modalMask').classList.remove('hidden');
   }
+  function askPassword(prompt, onOk, title){
+    var box = document.createElement('div');
+    box.className = 'modal-mask';
+    box.innerHTML = '<div class="modal-box">'
+      + '<div class="modal-title">'+(title||'需要密码')+'</div>'
+      + '<div class="modal-msg" style="margin-bottom:10px">'+(prompt||'请输入操作密码')+'</div>'
+      + '<input type="password" class="modal-input" id="pwInput" autocomplete="off" placeholder="输入密码">'
+      + '<div class="modal-actions">'
+      +   '<button class="btn ghost" id="pwCancel">取消</button>'
+      +   '<button class="btn primary" id="pwOk">确认</button>'
+      + '</div></div>';
+    document.body.appendChild(box);
+    var input = document.getElementById('pwInput');
+    setTimeout(function(){ try{ input.focus(); }catch(e){} }, 60);
+    function close(){ box.parentNode && box.parentNode.removeChild(box); document.removeEventListener('keydown', onKey); }
+    function onKey(e){
+      if(e.key==='Enter'){ e.preventDefault(); doOk(); }
+      else if(e.key==='Escape'){ e.preventDefault(); close(); }
+    }
+    document.addEventListener('keydown', onKey);
+    function doOk(){
+      var v = input.value || '';
+      close();
+      if(onOk) onOk(v);
+    }
+    document.getElementById('pwOk').onclick = doOk;
+    document.getElementById('pwCancel').onclick = close;
+  }
+
+  var ADMIN_PWD = 'Peets123';
+  function askPassword(prompt, onOk, title){
+    var box = document.createElement('div');
+    box.className = 'modal-mask';
+    box.innerHTML = '<div class="modal-box">'
+      + '<div class="modal-title">'+(title||'需要密码')+'</div>'
+      + '<div class="modal-msg" style="margin-bottom:10px">'+(prompt||'请输入操作密码')+'</div>'
+      + '<input type="password" class="modal-input" id="pwInput" autocomplete="off" placeholder="输入密码">'
+      + '<div class="modal-actions">'
+      +   '<button class="btn ghost" id="pwCancel">取消</button>'
+      +   '<button class="btn primary" id="pwOk">确认</button>'
+      + '</div></div>';
+    document.body.appendChild(box);
+    var input = document.getElementById('pwInput');
+    setTimeout(function(){ try{ input.focus(); }catch(e){} }, 60);
+    function close(){ box.parentNode && box.parentNode.removeChild(box); document.removeEventListener('keydown', onKey); }
+    function onKey(e){
+      if(e.key==='Enter'){ e.preventDefault(); doOk(); }
+      else if(e.key==='Escape'){ e.preventDefault(); close(); }
+    }
+    document.addEventListener('keydown', onKey);
+    function doOk(){
+      var v = input.value || '';
+      close();
+      if(onOk) onOk(v);
+    }
+    document.getElementById('pwOk').onclick = doOk;
+    document.getElementById('pwCancel').onclick = close;
+  }
+
   function showConfirm(msg, onYes, title){
     $('modalTitle').textContent = title || '确认';
     $('modalMsg').textContent = msg;
@@ -459,12 +518,16 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
 
   // ============ 清空本地数据 ============
   function clearData(){
-    showConfirm('\u786e\u5b9a\u8981\u6e05\u7a7a\u672c\u673a\u7684\u6240\u6709\u5b66\u4e60\u8bb0\u5f55\u5417\uff1f\u6b64\u64cd\u4f5c\u4e0d\u53ef\u64a4\u9500\uff0c\u5efa\u8bae\u5148\u5bfc\u51fa\u5907\u4efd\u3002', function(){
-      try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
-      renderStats();
-      $('backupHint').textContent = '\u5df2\u6e05\u7a7a\u672c\u673a\u5b66\u4e60\u8bb0\u5f55';
-    }, '\u6e05\u7a7a\u6570\u636e');
+    askPassword('请输入管理员密码以清空本地所有数据', function(pwd){
+      if(pwd !== ADMIN_PWD){ showAlert('密码错误，操作已取消'); return; }
+      showConfirm('确定要清空本机的所有学习记录吗？此操作不可撤销，建议先导出备份。', function(){
+        try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+        renderStats();
+        $('backupHint').textContent = '已清空本机学习记录';
+      }, '清空数据');
+    }, '清空本地数据');
   }
+
 
   // ============ 绑定事件 ============
   $('btnExport').onclick = exportData;
@@ -799,15 +862,19 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
     });
   }
 
+  var ADMIN_PWD = 'Peets123';
   function clearHistory(){
     var arr = loadHistory();
     if(!arr.length){ showAlert('没有可清除的历史记录'); return; }
-    showConfirm('确定要清空本机的全部 '+arr.length+' 轮记录吗？\n建议先导出备份，清除后不可恢复。', function(){
-      try{ localStorage.removeItem(HIST_KEY); }catch(e){}
-      renderHistory();
-      if($('histHint')) $('histHint').textContent = '已清空 '+arr.length+' 轮历史记录';
-    }, '清除历史成绩');
+    askPassword('请输入管理员密码以清除全部历史记录', function(pwd){
+      if(pwd !== ADMIN_PWD){ showAlert('密码错误，操作已取消'); return; }
+      showConfirm('确定要清空本机的全部 '+arr.length+' 轮记录吗？\n建议先导出备份，清除后不可恢复。', function(){
+        try{ localStorage.removeItem(HIST_KEY); }catch(e){}
+        renderHistory();
+      }, '清除历史成绩');
+    }, '清除历史记录');
   }
+
 
   $('btnClearHistory').onclick = clearHistory;
   $('histTitle').onclick = showFullHistory;
