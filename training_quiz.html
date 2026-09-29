@@ -215,6 +215,20 @@
       </div>
       <div class="backup-hint" id="backupHint" data-page-node-id="ef6k9aQTjeo3y0H6uwKL77"></div>
     </div>
+
+    <!-- 排行榜贡献开关 -->
+    <div class="card backup-card" style="border-color:var(--gold)">
+      <div class="row" style="margin-bottom:6px">
+        <span class="tag" style="background:var(--gold-deep);color:#fff;font-size:11px;padding:2px 10px;border-radius:20px;font-weight:600">📊 全员排行榜</span>
+      </div>
+      <div style="font-size:13px;color:var(--cream-dim);line-height:1.6;margin-bottom:8px">开启后，每次答完一轮会<strong style="color:var(--gold)">匿名</strong>提交分数（签名/分数/用时/章节/时间，不含 IP/错题号等隐私）。可随时关闭。</div>
+      <div class="row">
+        <button class="btn ghost" id="btnLeaderboardToggle" style="flex:1">📤 开启匿名贡献</button>
+        <a class="btn ghost" id="btnLeaderboardView" href="https://coffee-quiz-djc.pages.dev/api/ranking" target="_blank" style="flex:1;text-decoration:none;display:inline-flex;align-items:center;justify-content:center">📈 查看全员榜单</a>
+      </div>
+      <div class="backup-hint" id="leaderboardHint"></div>
+    </div>
+
     <div class="card start-card" data-page-node-id="wgURcX5CJMFUesM0o3Vh56">
       <div class="tag" data-page-node-id="lviHoiKBapdFeBEa8liNCC">STEP 1 · 抽题数量</div>
       <div class="start-row" id="numPick" data-page-node-id="QtrzbFXCV7RY4zPXB5nCXx"></div>
@@ -488,6 +502,68 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
   }
 
   // ============ 清空本地数据 ============
+
+  // ============ 全员排行榜（匿名贡献）============
+  var LB_KEY = 'wb_quiz_leaderboard_optin_v1';
+  var LB_API = 'https://coffee-quiz-djc.pages.dev/api/submit';
+  function lbEnabled(){
+    try{ return localStorage.getItem(LB_KEY) === '1'; }catch(e){ return false; }
+  }
+  function lbSetEnabled(on){
+    try{ localStorage.setItem(LB_KEY, on ? '1' : '0'); }catch(e){}
+    renderLeaderboardBtn();
+  }
+  function renderLeaderboardBtn(){
+    var btn = $('btnLeaderboardToggle');
+    if(!btn) return;
+    if(lbEnabled()){
+      btn.innerHTML = '✅ 已开启（点击关闭）';
+      btn.style.color = 'var(--gold)';
+      btn.style.borderColor = 'var(--gold)';
+      $('leaderboardHint').textContent = '每轮结束后会自动匿名上报';
+    }else{
+      btn.innerHTML = '📤 开启匿名贡献';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+      $('leaderboardHint').textContent = '当前未向全员榜上报（仅本机可见）';
+    }
+  }
+  function lbAskFirstTime(){
+    if(localStorage.getItem(LB_KEY) !== null) return; // 已设置过
+    showConfirm('是否开启匿名贡献到全员排行榜？\n开启后每轮答题成绩（仅签名/分数/用时）会上传到公共榜单。\n任何时候可关闭，本机数据不影响。', function(){
+      lbSetEnabled(true);
+      showAlert('已开启，下次答完一轮会自动匿名上报');
+    }, '匿名贡献排行榜');
+  }
+  function submitToLeaderboard(entry){
+    if(!lbEnabled() || !entry || !entry.sig) return;
+    var payload = {
+      sig: entry.sig,
+      total: entry.total,
+      right: entry.right,
+      pct: entry.pct,
+      duration: entry.duration || 0,
+      cats: (entry.cats||[]).join(','),
+      browser: navigator.userAgent.slice(0, 80),
+      ts: entry.ts
+    };
+    fetch(LB_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      mode: 'cors'
+    }).then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(j){
+      if(j && j.ok){
+        $('leaderboardHint').textContent = '已上报本轮（'+payload.sig+' · '+payload.pct+'%）';
+      }else{
+        $('leaderboardHint').textContent = '上报失败（可查看 https://coffee-quiz-djc.pages.dev/api/ranking 排查）';
+      }
+    }).catch(function(){
+      $('leaderboardHint').textContent = '上报失败（网络问题，本机数据未受影响）';
+    });
+  }
+
   function clearData(){
     askPassword('请输入管理员密码以清空本地所有数据', function(pwd){
       if(pwd !== ADMIN_PWD){ showAlert('密码错误，操作已取消'); return; }
@@ -848,6 +924,9 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
 
 
   $('btnClearHistory').onclick = clearHistory;
+  $('btnLeaderboardToggle').onclick = function(){ lbSetEnabled(!lbEnabled()); };
+  renderLeaderboardBtn();
+  lbAskFirstTime();
   $('histTitle').onclick = showFullHistory;
   renderHistory();
 
