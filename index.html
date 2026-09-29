@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="Hqo2dH8J34a5BM1yYmsqbk">
+<head data-page-node-id="yppggJ1Q5njTGSIsCGXJM4">
+<meta charset="UTF-8" data-page-node-id="fajtkz2JR6W3cIH5YFetfL">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" data-page-node-id="R8GA9Nnzls93cb2x5Fw0nH">
+<title>Q 证理论 · 咖啡自测</title>
+<style>
+  :root{
+    --bg:#2a1a10;
+    --panel:#3a2517;
+    --panel2:#4a2f1d;
+    --cream:#f3e6d4;
+    --cream-dim:#d8c3a6;
+    --gold:#c89a63;
+    --gold-deep:#a97a42;
+    --green:#7fb069;
+    --red:#e06b5b;
+    --line:#5a3c26;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{
+    font-family:"Microsoft YaHei","PingFang SC","Helvetica Neue",Arial,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(200,154,99,.18), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(127,176,105,.10), transparent 60%),
+      var(--bg);
+    color:var(--cream);min-height:100vh;padding:0 0 40px;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:16px}
+  header{text-align:center;padding:26px 10px 14px}
+  .kicker{color:var(--gold);font-size:12px;letter-spacing:3px;font-weight:600}
+  h1{font-size:26px;font-weight:800;margin:6px 0 2px;letter-spacing:1px}
+  .sub{color:var(--cream-dim);font-size:13px}
+  .beans{font-size:20px;margin-top:4px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .tag{display:inline-block;background:var(--gold-deep);color:#fff;font-size:11px;padding:2px 10px;border-radius:20px;margin-bottom:10px;font-weight:600}
+  .hidden{display:none!important}
+  .start-card{margin-top:10px}
+  .start-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
+  .num{flex:1;min-width:64px;text-align:center;background:var(--panel2);border:1px solid var(--line);color:var(--cream);padding:12px 4px;border-radius:12px;cursor:pointer;font-size:12px;transition:.15s}
+  .num b{display:block;font-size:18px;color:var(--gold);font-weight:800}
+  .num.on{background:var(--gold);color:#2a1a10;border-color:var(--gold)}
+  .num.on b{color:#2a1a10}
+  .lbl{font-size:13px;color:var(--cream-dim);margin:14px 0 6px;font-weight:600}
+  .cat-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{background:var(--panel2);border:1px solid var(--line);color:var(--cream-dim);font-size:12px;padding:6px 10px;border-radius:20px;cursor:pointer;transition:.15s}
+  .chip.on{background:var(--gold);color:#2a1a10;border-color:var(--gold);font-weight:600}
+  .actions{display:flex;gap:10px;margin-top:18px}
+  .btn{flex:1;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+  .btn.primary{background:linear-gradient(135deg,#c89a63,#a97a42);color:#241408}
+  .btn.ghost{background:transparent;border:1px solid var(--gold);color:var(--gold)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin:6px 0 12px;font-size:13px;color:var(--cream-dim)}
+  .progbar{height:6px;background:var(--panel2);border-radius:6px;overflow:hidden;margin-bottom:4px}
+  .progfill{height:100%;background:linear-gradient(90deg,#c89a63,#e3c08a);width:0%;transition:width .2s}
+  .progtext{text-align:center;font-size:12px;color:var(--cream-dim);margin-bottom:12px}
+  .qtext{font-size:17px;line-height:1.7;font-weight:600;color:#fdf3e3}
+  .opts{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+  .opt{display:flex;align-items:flex-start;gap:12px;background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:13px 14px;cursor:pointer;transition:.15s;font-size:15px;line-height:1.5}
+  .opt .let{flex:none;width:28px;height:28px;border-radius:50%;background:var(--line);color:var(--cream);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+  .opt:active{transform:scale(.995)}
+  .opt.right{border-color:var(--green);background:rgba(127,176,105,.16)}
+  .opt.right .let{background:var(--green);color:#fff}
+  .opt.wrong{border-color:var(--red);background:rgba(224,107,91,.14)}
+  .opt.wrong .let{background:var(--red);color:#fff}
+  .opt.dim{opacity:.5}
+  .feedback{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.6;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:rgba(127,176,105,.18);border:1px solid var(--green);color:#cfe6c0}
+  .feedback.no{background:rgba(224,107,91,.16);border:1px solid var(--red);color:#f0c7c1}
+  .feedback b{color:#fff}
+  .feedback .right-ans{margin-top:4px;display:block;color:#ffd9a0}
+  .foot-nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+  .foot-nav .btn{flex:0 0 auto;padding:12px 22px;font-size:14px}
+
+  /* 累计进度条 */
+  .stats-bar{display:flex;justify-content:space-between;gap:6px;margin:10px 12px 0;font-size:12px;color:var(--cream-dim)}
+  .stats-bar .v{color:var(--gold);font-weight:800;font-size:15px;display:block;margin-top:2px}
+  /* 备份卡 */
+  .backup-card{margin-top:12px;padding:14px}
+  .backup-card .row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+  .backup-card .btn{padding:10px 12px;font-size:13px;flex:1;min-width:120px}
+  .backup-hint{font-size:11px;color:var(--cream-dim);line-height:1.6;margin-top:6px}
+  .file-input{display:none}
+
+  /* 历史成绩卡 */
+  .history-card{margin-top:12px;padding:14px}
+  .history-card .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .history-card .row .title{font-weight:700;color:var(--cream)}
+  .history-card .row .title:hover{color:var(--gold)}
+  .history-card .row .actions{display:flex;gap:6px}
+  .icon-btn{background:transparent;border:1px solid var(--line);color:var(--cream-dim);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:inherit}
+  .icon-btn:hover{border-color:var(--gold);color:var(--gold)}
+  .icon-btn.danger{border-color:#7a3a2e;color:#e06b5b}
+  .icon-btn.danger:hover{background:rgba(224,107,91,.12)}
+  .hist-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto}
+  .hist-item{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px}
+  .hist-item .left{display:flex;align-items:center;gap:10px;min-width:0}
+  .rank-badge{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;background:var(--line);color:var(--cream-dim)}
+  .rank-badge.gold{background:linear-gradient(135deg,#d9b070,#a97a42);color:#241408}
+  .rank-badge.silver{background:linear-gradient(135deg,#c8c8c8,#8a8a8a);color:#241408}
+  .rank-badge.bronze{background:linear-gradient(135deg,#cd9a6e,#8a5a30);color:#241408}
+  .hist-sig{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--gold);font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px;font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;cursor:pointer}
+  .hist-sig.empty{color:var(--cream-dim);border-style:dashed;font-style:italic;font-weight:400}
+  .hist-sig:hover{border-color:var(--gold)}
+  .hist-sig-action{display:inline-block;color:var(--cream-dim);font-size:13px;padding:1px 5px;margin-left:2px;cursor:pointer;border-radius:4px;vertical-align:middle;user-select:none;line-height:1}
+  .hist-sig-action:hover{color:var(--gold);background:var(--panel)}
+  .hist-sig-action.danger:hover{color:#e06b5b;background:rgba(224,107,91,.12)}
+  /* 签名历史排名卡片 */
+  .prof-box{max-width:520px;max-height:88vh;display:flex;flex-direction:column}
+  .prof-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .prof-tag{flex:none;background:var(--gold-deep);color:#fff;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
+  .prof-name{font-size:18px;font-weight:800;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .prof-stats{display:flex;gap:10px;margin-bottom:12px}
+  .prof-stat{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+  .prof-stat .v{display:block;color:var(--gold);font-weight:800;font-size:18px}
+  .prof-stat .l{display:block;color:var(--cream-dim);font-size:11px;margin-top:2px}
+  .prof-summary{display:flex;gap:10px;margin-bottom:14px}
+  .prof-summary-item{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:12px;display:flex;justify-content:space-between}
+  .lbl-best{color:#7fb069;font-weight:700}
+  .lbl-worst{color:#e06b5b;font-weight:700}
+  .prof-list-title{font-size:12px;color:var(--cream-dim);margin-bottom:6px;font-weight:600}
+  .prof-list{overflow:auto;max-height:40vh;display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+  .prof-row{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12px}
+  .prof-pct{flex:none;color:var(--gold);font-weight:800;font-size:14px;width:48px}
+  .prof-meta{flex:1;color:var(--cream-dim);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .prof-diff{flex:none;color:var(--cream-dim);font-size:10px;background:var(--panel);border:1px solid var(--line);padding:1px 6px;border-radius:8px}
+  .prof-actions .btn{padding:10px 12px;font-size:13px}
+  .prof-head-stat{margin-left:auto;background:var(--panel2);border:1px solid var(--line);color:var(--gold);font-size:12px;padding:3px 10px;border-radius:10px;font-weight:600}
+  .prof-list-all .prof-row .rank-badge{width:24px;height:24px;font-size:12px}
+  .prof-pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--gold);font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}
+  .prof-pill.empty{color:var(--cream-dim);border-style:dashed;font-style:italic;font-weight:400}
+  .hist-item .meta{color:var(--cream-dim);font-size:11px;margin-top:2px}
+  .hist-item .pct{flex:none;font-weight:800;font-size:16px;color:var(--gold)}
+  .hist-item .right-meta{flex:none;text-align:right;color:var(--cream-dim);font-size:11px;line-height:1.5}
+  .hist-empty{text-align:center;color:var(--cream-dim);font-size:13px;padding:14px}
+  .pct-bar{flex:none;width:60px;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+  .pct-bar .f{height:100%;background:linear-gradient(90deg,#7fb069,#c89a63)}
+  /* modal */
+  .modal-mask{position:fixed;inset:0;background:rgba(20,10,4,.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:18px}
+  .modal-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:340px;width:100%;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+  .modal-title{font-size:16px;font-weight:700;color:var(--cream);margin-bottom:8px;white-space:pre-line}
+  .modal-msg{font-size:14px;color:var(--cream-dim);line-height:1.6;margin-bottom:16px;white-space:pre-line}
+  .modal-actions{display:flex;gap:10px}
+  .modal-actions .btn{flex:1;padding:12px;font-size:14px}
+  .modal-input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--cream);font-family:inherit;font-size:14px;padding:10px 12px;border-radius:10px;margin-bottom:12px;outline:none;box-sizing:border-box}
+  .modal-input:focus{border-color:var(--gold)}
+  .score-ring{width:150px;height:150px;margin:6px auto;border-radius:50%;
+    background:conic-gradient(var(--gold) var(--p,0deg), rgba(255,255,255,.08) 0);
+    display:flex;align-items:center;justify-content:center;position:relative}
+  .score-ring::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--panel)}
+  .score-val{position:relative;text-align:center}
+  .score-val .big{font-size:40px;font-weight:800;color:var(--gold)}
+  .score-val .small{font-size:13px;color:var(--cream-dim)}
+  .row2{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .row2 span:last-child{font-weight:700}
+  .lbl2{font-size:13px;color:var(--cream-dim);margin:16px 0 6px;font-weight:600}
+  .csrow{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px}
+  .csrow .name{width:110px;flex:none;color:var(--cream-dim)}
+  .csrow .track{flex:1;height:8px;background:var(--panel2);border-radius:5px;overflow:hidden}
+  .csrow .fill{height:100%;background:linear-gradient(90deg,#7fb069,#c89a63);transition:width .4s}
+  .csrow .pct{width:42px;text-align:right;font-weight:700;color:var(--gold)}
+  .review{margin-top:18px}
+  .rev-item{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+  .rev-item .rcat{font-size:11px;color:var(--gold);margin-bottom:8px;font-weight:600}
+  .rev-item .rq{font-size:14px;font-weight:600;line-height:1.6;margin-bottom:6px}
+  .rev-item .ra{color:var(--green);font-size:13px}
+  .empty-note{text-align:center;color:var(--cream-dim);font-size:14px;padding:20px}
+  .btnrow{display:flex;gap:10px;margin-top:10px}
+  footer{text-align:center;color:#8a6c4f;font-size:12px;margin-top:22px;line-height:1.9}
+  footer b{color:#c89a63}
+  @media(min-width:760px){h1{font-size:30px}}
+</style>
+</head>
+<body data-page-node-id="HHFVgVm51ti0hb1z5wEmXe">
+<div class="wrap" data-page-node-id="Phfkd4InIwGF3lFiy7K5PH">
+
+  <!-- 首页 -->
+  <div id="viewStart" data-page-node-id="6HlL1DjUQeYUXwByzGzH6F">
+    <header data-page-node-id="vYzzLcEXFpE8oA9yNydsG7">
+      <div class="kicker" data-page-node-id="DFPylKwNrGSqKZ1gN94b8d">Q GRADER · 模拟考</div>
+      <h1 data-page-node-id="5HY6CZNViYdvH9Cb6g3ckT">Q 证理论自测</h1>
+      <div class="beans" data-page-node-id="IeYGFRtDgqzwCAjPfgXXxM">☕ ☕ ☕</div>
+      <div class="sub" data-page-node-id="1G7ARXLfhSmjGBS7GBEVWn">SCA 杯测 · 烘焙 · 豆种 · 酸类 · 分级 · CQI 全考点</div>
+    </header>
+    <!-- 历史成绩记录与排名 -->
+    <div class="card history-card">
+      <div class="row">
+        <span class="title" id="histTitle" title="点击查看全量历史成绩" style="cursor:pointer">📜 历史成绩（按正确率排名）</span>
+        <div class="actions">
+          <button class="icon-btn danger" id="btnClearHistory" title="清除全部历史">清除记录</button>
+        </div>
+      </div>
+      <div class="hist-list" id="histList"></div>
+    </div>
+
+    <!-- 累计进度 -->
+    <div class="stats-bar card" style="padding:10px 14px;margin-top:12px" data-page-node-id="up5PN5FsNlB62dZ59i9xRm">
+      <div style="text-align:center;flex:1" data-page-node-id="rOz50OI0Zgf3u4ZWzKK89s">累计轮次<span class="v" id="statRounds" data-page-node-id="iVShQKMoNWeMP32p3716fZ">0</span></div>
+      <div style="text-align:center;flex:1" data-page-node-id="hCaVjSW5nfh5UWd1hGtLNB">累计答题<span class="v" id="statAnswered" data-page-node-id="U1gju7gRagvxrAFBnX7o0T">0</span></div>
+      <div style="text-align:center;flex:1" data-page-node-id="CfGqvFkbJ1yJX9ydvrsdSR">历史正确率<span class="v" id="statPct" data-page-node-id="jivHgPhVbaunQ7ExZujUOR">—</span></div>
+    </div>
+
+    <!-- 数据备份 -->
+    <div class="card backup-card" data-page-node-id="dFsNejflNwYWhzCO1x1NAP">
+      <div class="tag" style="margin-bottom:6px" data-page-node-id="1aeJaW3SfxnSUuBPXrBEX8">数据备份</div>
+      <div style="font-size:13px;color:var(--cream-dim);line-height:1.6" data-page-node-id="DyXP8unHhjt0xlc6oF0bdW">本机学习数据存在浏览器本地。换设备或清缓存前先导出。</div>
+      <div class="row" data-page-node-id="AAxM4eEiGNlgaXBpzup4MR">
+        <button class="btn ghost" id="btnExport" data-page-node-id="u887E4UcGkeMaqCLyAtMtr">导出 JSON 备份</button>
+        <button class="btn ghost" id="btnImport" data-page-node-id="G0LZ6HIZN8AabLQsUNJ29Q">导入恢复</button>
+        <input type="file" id="fileImport" class="file-input" accept="application/json,.json" data-page-node-id="EVk2PCU9r7GlhW29lxS7nI">
+      </div>
+      <div class="row" data-page-node-id="MtjsRlSc5L7MKwOOwSmK3n">
+        <button class="btn ghost" id="btnClearData" style="color:var(--red);border-color:var(--red)" data-page-node-id="F9S1mp4BAIc2Td4gHDW9Zc">清空本地数据</button>
+      </div>
+      <div class="backup-hint" id="backupHint" data-page-node-id="ef6k9aQTjeo3y0H6uwKL77"></div>
+    </div>
+    <div class="card start-card" data-page-node-id="wgURcX5CJMFUesM0o3Vh56">
+      <div class="tag" data-page-node-id="lviHoiKBapdFeBEa8liNCC">STEP 1 · 抽题数量</div>
+      <div class="start-row" id="numPick" data-page-node-id="QtrzbFXCV7RY4zPXB5nCXx"></div>
+      <div class="lbl" data-page-node-id="VUPMNvTctOLQalj7xnCP24">STEP 2 · 按章节自选（可选，为空则覆盖全题库）</div>
+      <div class="cat-chips" id="catPick" data-page-node-id="NJAQcb2fG2EtHk4RJEwRHZ"></div>
+      <div class="actions" data-page-node-id="ASdUq8DnsVotnyHb3bG0ix">
+        <button class="btn ghost" id="btnAll" data-page-node-id="vb8qM4uB03HGzcKVAUhyFz">全题库随机</button>
+        <button class="btn primary" id="btnStart" data-page-node-id="1yHyMGRYGt98ZT5iMFGGW9">开始答题</button>
+      </div>
+    </div>
+    <footer data-page-node-id="HUveTXwGBh6ufMFExRH5Nu">题库共 <b id="bankCount" data-page-node-id="nay9Tfmdo3mUYGYh4gcilL">0</b> 题 · 每次随机抽题、选项乱序<br data-page-node-id="0lZE6yQsfIeEu1nFM4lG3Z">四选一 · 选后即时对答案 · 含章节正确率与错题回顾</footer>
+  </div>
+
+  <!-- 答题 -->
+  <div id="viewQuiz" class="hidden" data-page-node-id="OH2MjtJkh4Eg6KMFPmU5mS">
+    <header style="padding:18px 10px 6px" data-page-node-id="aVNOlrlSBdRhPksYTBIVNG">
+      <div class="kicker" data-page-node-id="ClA5oq2EOLKwqBYBmSd7Cp">Q GRADER · 模拟考</div>
+      <h1 style="font-size:20px" data-page-node-id="1WjfWUdUmLMFwkneZELPNI">答题中</h1>
+    </header>
+    <div class="topbar" data-page-node-id="xUOp4gcZwDHRmhd3PBU5H7">
+      <span data-page-node-id="ukBFqsQtGngIcCPEGBV2NX">第 <b id="qNow" style="color:#c89a63" data-page-node-id="EHH3CfxUECDpwnxAOIH9On">1</b> / <span id="qTotal" data-page-node-id="T23Du8VAywo2FGfG4lgJCe">0</span> 题</span>
+      <span id="scoreLive" data-page-node-id="JC7bTpjfuayOKRFuIws5SJ">已答 0</span>
+    </div>
+    <div class="progbar" data-page-node-id="bhEtsn7b31ambCKulEcjs9"><div class="progfill" id="progFill" data-page-node-id="bA05RcjweQweRwsvXbwxra"></div></div>
+    <div class="progtext" id="catNow" data-page-node-id="z54PnnluWIhKHnqsqKU1mP"></div>
+    <div class="card qcard" data-page-node-id="1UXMBTvXnqwZt8PBDx2G1o">
+      <div class="tag" id="qTag" data-page-node-id="hQZaLoKixd0R55EazIm1aV">章节</div>
+      <div class="qtext" id="qText" data-page-node-id="JwN3FP6XmNFedXKT28DAyb"></div>
+      <div class="opts" id="optList" data-page-node-id="qonCGVzdEx6DafU7xgT4ly"></div>
+      <div class="feedback" id="fbBox" data-page-node-id="q7tkUnTYbFpIOUW2jLa3fL"></div>
+      <div class="foot-nav" data-page-node-id="o9wuk1XEDRBm5V9OT9Naqn">
+        <button class="btn ghost" id="btnPrev" style="visibility:hidden" data-page-node-id="hCudIlP7qce8SHTC5nIVW6">← 上一题</button>
+        <button class="btn primary" id="btnNext" data-page-node-id="LTJXy5OhXkfsQL1kzSBL1B">下一题 →</button>
+        <button class="btn ghost" id="btnQuit" data-page-node-id="JFmfEeksyGicTVQV3BJGZg">结束</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结果 -->
+  <div id="viewResult" class="hidden" data-page-node-id="EWmzNyz5nSGGZ0kqDGRpJ3">
+    <header style="padding:24px 10px 8px" data-page-node-id="2CfNW6j26rfSnykbkn1edR">
+      <div class="kicker" data-page-node-id="CpHh5jGmCMyzZCUg9MNi3x">Q GRADER · 模拟考</div>
+      <h1 style="font-size:22px" data-page-node-id="tWuy89rIVdjGBzQ2KONUdx">本轮成绩</h1>
+    </header>
+    <div class="card" data-page-node-id="p9NZ9ziCoWbsaks1Ksgb2e">
+      <div class="score-ring" id="ring" data-page-node-id="jJ1JIcSc92IKj018i4lgOo">
+        <div class="score-val" data-page-node-id="gjZUmGTIzS5QuzCxRrwAvL"><div class="big" id="scorePct" data-page-node-id="yvX18srU5tWEYljx5cT6oP">0%</div><div class="small" id="scoreFrac" data-page-node-id="rCjxG5Ane19EIlEZbkhDAj">0 / 0</div></div>
+      </div>
+      <div id="resStats" data-page-node-id="qQsOpXVR3fEoCcGoisSAP0"></div>
+      <div class="actions" style="margin-top:18px" data-page-node-id="M7alpLGFQcOpWIU7MB9zeA">
+        <button class="btn primary" id="btnAgain" data-page-node-id="QSddWtxY8RGtX6xcqjqyQb">再测一轮</button>
+        <button class="btn ghost" id="btnRetryWrong" style="display:none" data-page-node-id="AzKqPFDNHoqo5FWvBBkEBj">重练错题</button>
+      </div>
+      <div class="btnrow" data-page-node-id="FzlC7JGkOIWzU8eYVtsXnn">
+        <button class="btn ghost" id="btnHome" data-page-node-id="RMl9C91adTG93qBOBACRZG">返回首页</button>
+        <button class="btn ghost" id="btnShowReview" data-page-node-id="yH3ANzXXDY8pFQ7Vn8rDfn">展开错题</button>
+      </div>
+    </div>
+    <div class="review hidden" id="reviewBox" data-page-node-id="uY9WB6X8DLOSfzs3S450JQ"></div>
+  </div>
+<div id="modalMask" class="modal-mask hidden" role="dialog" aria-modal="true" data-page-node-id="9M4rTZKR1rbm3d2Hq0QouX">
+  <div class="modal-box" data-page-node-id="4pL7KYYhXAIK7nrcDzHl4S">
+    <div class="modal-title" id="modalTitle" data-page-node-id="EffrouYwBybSmYs1qu7DCR">提示</div>
+    <div class="modal-msg" id="modalMsg" data-page-node-id="TCZ1F7k2YuscSqjHPz1AHS"></div>
+    <div class="modal-actions" data-page-node-id="wEBEeKrvDz4b6Ey99S591p">
+      <button class="btn ghost" id="modalCancel" style="display:none" data-page-node-id="V1No2nZXLo90oXp9u4E1ce">取消</button>
+      <button class="btn primary" id="modalOk" data-page-node-id="ikiXZrWUOSsNY6Xq2O3kTa">知道了</button>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准粉量是多少？", "opts": ["8.25g", "12.5g", "10g", "15g"], "ans": 0}, {"cat": "SCA杯测标准", "q": "SCA杯测对研磨粗细的定义是什么？", "opts": ["70-75%的粉通过美国标准30号筛网", "70-75%的咖啡粉通过美国标准20号筛网，且一杯一研磨", "90%的粉通过美国标准20号筛网", "50%的粉通过美国标准14号筛网"], "ans": 1}, {"cat": "SCA杯测标准", "q": "SCA杯测标准（以150ml水计）的粉水比约为多少？", "opts": ["1:18.18", "1:16.7", "1:12", "1:15"], "ans": 0}, {"cat": "SCA杯测标准", "q": "SCA杯测用水的水质（TDS）应为多少？", "opts": ["TDS 200-250ppm的高矿化水", "TDS 50-90ppm的蒸馏水", "TDS 0ppm的纯水", "TDS 125-175ppm（非蒸馏水或软水）"], "ans": 3}, {"cat": "SCA杯测标准", "q": "SCA杯测中研磨完成后应在多久内注水接触（无盖/有盖）？", "opts": ["与水接触前15分钟内完成研磨；用盖子时为30分钟", "注水浸泡后再补研磨", "杯测前一天研磨好存放", "1小时内完成即可"], "ans": 0}, {"cat": "SCA杯测标准", "q": "SCA杯测的标准冲煮温度是多少？", "opts": ["200华氏度（约93℃）", "212华氏度（100℃）", "175华氏度（79℃）", "185华氏度（85℃）"], "ans": 0}, {"cat": "SCA杯测标准", "q": "SCA杯测中咖啡的浸泡时间是多久？", "opts": ["6分钟", "2分钟", "8分钟", "4分钟"], "ans": 3}, {"cat": "SCA杯测标准", "q": "SCA杯测时咖啡应冷却到什么温度再品测、注水后多久风味最佳？", "opts": ["冷却至140华氏度（60℃），注水后5分钟", "冷却至120华氏度（49℃），注水后15分钟", "冷却至160华氏度（约71℃），注水后8-10分钟", "冷却至180华氏度（82℃），注水后3分钟"], "ans": 2}, {"cat": "SCA杯测标准", "q": "SCA杯测中每组摆放5杯的意义是什么？", "opts": ["提高评分的上限", "延长杯测的总时长", "增加单杯的份量", "保持一致性，便于比较与校准"], "ans": 3}, {"cat": "SCA杯测标准", "q": "达到精品咖啡标准的杯测分数是多少？", "opts": ["70分及以上", "80分及以上", "90分及以上", "85分及以上"], "ans": 1}, {"cat": "SCA杯测标准", "q": "进行“三角杯测”的主要目的是什么？", "opts": ["区分不同产区的风味差异", "统计生豆瑕疵数量", "评判烘焙的均匀度", "测定咖啡的浓度"], "ans": 0}, {"cat": "SCA杯测各项含义", "q": "SCA杯测中“风味”一项评价的是什么？", "opts": ["整体味道的清晰度和丰富度", "余韵的长短", "烘焙的均匀程度", "咖啡酸度的高低"], "ans": 0}, {"cat": "SCA杯测各项含义", "q": "杯测表中的“醇厚度”代表什么？", "opts": ["咖啡的温度高低", "咖啡的浓度比例", "液体的质感和纯度", "杯底沉淀物的多少"], "ans": 2}, {"cat": "SCA杯测各项含义", "q": "杯测表中的“平衡”是评价哪些要素之间的平衡？", "opts": ["风味、余韵、酸质、体质感四项", "干香、湿香、酸质、余韵", "甜度、苦度、酸度、咸度", "颜色、香气、质地、温度"], "ans": 0}, {"cat": "SCA杯测各项含义", "q": "杯测表中的“总印象”表示什么？", "opts": ["对烘焙度的单独打分", "仅评价余韵长度", "综合多个维度评价的整体感受", "仅评价酸质强度"], "ans": 2}, {"cat": "SCA杯测各项含义", "q": "杯测表上的垂直标尺代表什么？", "opts": ["质量高低，直接决定分数", "强度，与分数无关", "余韵长短，影响得分", "具体风味种类的多少"], "ans": 1}, {"cat": "SCA杯测各项含义", "q": "杯测表上的水平标尺对应什么？", "opts": ["对应指标的质量，直接反映分数", "杯测时间的长短", "风味的强度，与分数无关", "温度变化的快慢"], "ans": 0}, {"cat": "SCA杯测各项含义", "q": "关于“瑕疵杯”与“不一致”的关系，下列说法正确的是？", "opts": ["两者完全无关", "不一致就必然等于有瑕疵", "瑕疵一定是不一致的，而不一致不一定存在瑕疵", "有瑕疵就不属于不一致"], "ans": 2}, {"cat": "SCA烘焙标准", "q": "SCA标准样品烘焙时长约为多少？", "opts": ["8-12分钟", "15-20分钟", "5-8分钟", "3-5分钟"], "ans": 0}, {"cat": "SCA烘焙标准", "q": "SCA样品烘焙所用的样品重量是多少？", "opts": ["250g", "350g", "50g", "100g"], "ans": 3}, {"cat": "SCA烘焙标准", "q": "样品应在杯测前多久内完成烘焙？", "opts": ["杯测前1周", "杯测前24小时内", "杯测前48小时之外即可", "杯测当天边测边烘"], "ans": 1}, {"cat": "SCA烘焙标准", "q": "烘焙后“养豆”至少需要多久、最好多久？", "opts": ["至少1小时，最好4小时", "至少8小时，最好24小时", "无需养豆即可测", "至少48小时，最好72小时"], "ans": 1}, {"cat": "SCA烘焙标准", "q": "SCA样品烘焙所采用的烘焙度是什么？", "opts": ["比产品烘焙更浅的浅度、浅中度", "比产品烘焙更深的深烘焙", "法式极深烘焙", "重度二爆烘焙"], "ans": 0}, {"cat": "SCA烘焙标准", "q": "SCA样品烘焙的目标色值（Agtron）约为多少？", "opts": ["Agtron 55", "Agtron 63（SC点即二爆开始的时间）", "Agtron 75", "Agtron 90"], "ans": 1}, {"cat": "SCA烘焙标准", "q": "烘焙中常用哪种仪器检测咖啡豆的色值？", "opts": ["密度仪", "水分测定仪", "糖度计", "Agtron色度仪"], "ans": 3}, {"cat": "SCA烘焙标准", "q": "“烘烤的甜味”这一瑕疵烘烤感受通常如何描述？", "opts": ["清新的花香甜", "明亮的果酸甜", "无聊的闷甜", "焦糖的活泼甜"], "ans": 2}, {"cat": "SCA烘焙标准", "q": "梅拉德（美拉德）反应一般发生在什么温度范围？", "opts": ["140-170℃", "200-230℃", "60-85℃", "90-110℃"], "ans": 0}, {"cat": "感官与乳突", "q": "五种基本味觉中，哪一种最容易被人感知到？", "opts": ["甜", "酸", "苦", "鲜"], "ans": 2}, {"cat": "感官与乳突", "q": "五种基本味觉中哪一种最难被感知到？", "opts": ["酸", "咸", "甜", "苦"], "ans": 2}, {"cat": "感官与乳突", "q": "轮廓状乳突主要分布在舌头哪里、对什么味道敏感？", "opts": ["舌两侧中部，对咸味敏感", "舌两侧前端，对酸味敏感", "舌尖，对甜味敏感", "舌头后部，对苦味敏感"], "ans": 3}, {"cat": "感官与乳突", "q": "对特定味道“敏感人群”约占人口的比例是多少？", "opts": ["50%", "25%", "10%", "75%"], "ans": 1}, {"cat": "感官与乳突", "q": "杯测房间在设计上主要避免干扰哪一项感官？", "opts": ["触觉", "视觉", "嗅觉", "味觉"], "ans": 1}, {"cat": "感官与乳突", "q": "关于“甜味”的感知，下列说法正确的是？", "opts": ["甜最容易感知，由舌后部感知", "甜在舌两侧中部感知", "甜需依靠轮廓状乳突感知", "甜最难感知，主要由舌尖部位的菌状乳突决定"], "ans": 3}, {"cat": "感官与乳突", "q": "除甜味外，酸味最先在舌头的哪个部位被感知？", "opts": ["舌头后部", "舌尖正中央", "舌头的两侧前端", "舌根部"], "ans": 2}, {"cat": "感官与乳突", "q": "舌头的总体面积主要用于感知什么味道？", "opts": ["咸味", "甜味", "苦味", "鲜味"], "ans": 3}, {"cat": "感官与乳突", "q": "咸味的感知区域在舌头的哪个部位？", "opts": ["舌头的两侧中部", "舌后部", "舌根", "舌尖"], "ans": 0}, {"cat": "感官与乳突", "q": "为什么苦味最容易被人感受到？", "opts": ["因为舌头前部对苦味最敏感", "因为苦味不需要味觉受体", "因为苦味本身的强度天然最高", "因为苦味位于轮廓状乳突地带，这一部分比较容易感受到"], "ans": 3}, {"cat": "闻香瓶", "q": "闻香瓶中的“烟丝”属于哪个风味组别？", "opts": ["焦糖化组群", "酶促组群", "水果组群", "干馏组群"], "ans": 3}, {"cat": "闻香瓶", "q": "闻香瓶中哪一种闻起来像燃烧的灰烬味道？", "opts": ["香草", "烤杏仁", "烘焙咖啡", "蜂蜜"], "ans": 2}, {"cat": "闻香瓶", "q": "哪个风味组群在闻香瓶中最稳定、不容易挥发？", "opts": ["干馏组群", "焦糖化组群", "酶促组群", "水果组群"], "ans": 0}, {"cat": "闻香瓶", "q": "哪个风味族群最容易挥发？", "opts": ["干馏组群", "焦糖化组群", "酶促组群", "土壤组群"], "ans": 2}, {"cat": "风味轮", "q": "“咖啡花”通常被归类为什么风味？", "opts": ["木质辛香", "果干甜香", "柑橘花香", "白色花香"], "ans": 3}, {"cat": "风味轮", "q": "“梨、苹果”在风味轮中通常归属哪些风味类别？", "opts": ["花香、核果类、热带水果、柑橘及其他水果", "烘焙、烟熏、树脂", "干馏、香料、木质", "焦糖化、坚果、巧克力"], "ans": 0}, {"cat": "风味轮", "q": "酶促风味主要是在哪个阶段形成的？", "opts": ["在烘焙一爆之后", "在生长和处理阶段", "在储存老化阶段", "在研磨萃取阶段"], "ans": 1}, {"cat": "风味轮", "q": "干馏组群的风味主要形成在什么阶段？", "opts": ["烘焙一开始", "一爆之前", "二爆之后（SC点之后）", "生豆发芽阶段"], "ans": 2}, {"cat": "风味轮", "q": "咖啡中出现的“黄油”风味属于哪个风味组？", "opts": ["干馏风味", "焦糖化风味", "酶促风味", "水果发酵风味"], "ans": 1}, {"cat": "豆子结构", "q": "晒干后的咖啡豆在脱壳前包裹的硬壳叫什么？", "opts": ["羊皮纸", "外果皮", "银皮", "果胶"], "ans": 0}, {"cat": "豆子结构", "q": "湿刨法与其他处理方法的核心区别是什么？", "opts": ["全程不去除羊皮纸", "用高温蒸汽处理", "比日晒法多浸水两周", "水分还有30%时即脱壳，在达到10%-12%生豆水分之前就已提前脱去羊皮纸"], "ans": 3}, {"cat": "豆子结构", "q": "湿刨法（Giling Basah）主要用于哪个产地的咖啡？", "opts": ["哥伦比亚", "巴西", "印度尼西亚（曼特宁）", "埃塞俄比亚"], "ans": 2}, {"cat": "豆子结构", "q": "咖啡生豆脱壳前的水分通常控制在多少？", "opts": ["10%-12%", "20%-25%", "15%-18%", "6%-8%"], "ans": 0}, {"cat": "豆种", "q": "阿拉比卡与罗布斯塔的发源地（原产地）分别是？", "opts": ["埃塞俄比亚、乌干达", "哥伦比亚、印度", "肯尼亚、印尼", "巴西、越南"], "ans": 0}, {"cat": "豆种", "q": "目前世界上最大的两个咖啡生产国分别是？", "opts": ["巴西、越南", "哥伦比亚、印度尼西亚", "埃塞俄比亚、危地马拉", "印度、秘鲁"], "ans": 0}, {"cat": "豆种", "q": "全球阿拉比卡咖啡产量占总产量的比例约为多少？", "opts": ["85%", "70%", "50%", "40%"], "ans": 1}, {"cat": "豆种", "q": "特殊豆种“帕卡马拉”是由哪两种咖啡杂交而来？", "opts": ["瑰夏×卡杜拉", "象豆（马拉戈日皮-铁皮卡系）×帕卡斯（波旁系）", "肯尼亚SL28×波旁", "罗布斯塔×铁皮卡"], "ans": 1}, {"cat": "豆种", "q": "全球产量前四的咖啡国家合计约占世界总产量的比例是多少？", "opts": ["40%", "70%", "90%", "55%"], "ans": 1}, {"cat": "豆种", "q": "阿拉比卡的主要栽培豆种包括哪些？", "opts": ["瑰夏、帕卡马拉、SL28仅此三类", "罗布斯塔、利比里卡、恰特", "波旁、铁皮卡、卡杜拉、卡杜埃", "科尼伦、蓝山、蒙多诺沃"], "ans": 2}, {"cat": "豆种", "q": "下列哪些属于典型的“改良品种”？", "opts": ["波旁、铁皮卡、卡杜拉", "罗布斯塔、乌干达恰特豆", "卡杜埃、蒙多诺沃、马拉戈日皮", "瑰夏、改良原生种、肯尼亚SL28"], "ans": 3}, {"cat": "豆种", "q": "罗布斯塔因含有哪种物质而具有较强的抗虫害能力？", "opts": ["绿原酸", "咖啡因", "脂类", "蔗糖"], "ans": 0}, {"cat": "生熟豆瑕疵", "q": "生豆分级的标准样本重量是多少？", "opts": ["350g", "500g", "200g", "100g"], "ans": 0}, {"cat": "生熟豆瑕疵", "q": "熟豆（烘焙豆）分级的标准样本重量是多少？", "opts": ["150g", "100g", "350g", "250g"], "ans": 1}, {"cat": "生熟豆瑕疵", "q": "精品级生豆在一级/二级瑕疵上的合格标准是什么？", "opts": ["0个一级瑕疵，且少于5个二级瑕疵", "0个二级但一级不限", "允许2个一级、10个二级", "1个一级、3个二级"], "ans": 0}, {"cat": "生豆存放", "q": "咖啡生豆的标准存放条件是？", "opts": ["温度10℃以下、湿度30%、真空密封", "温度20-25℃、湿度60%、避光", "常温高湿、阳光直晒", "温度35-40℃、湿度80%、强通风"], "ans": 1}, {"cat": "种植", "q": "影响咖啡豆中糖分（蔗糖）生成的主要条件有哪些？", "opts": ["烘焙温度、豆色、密度", "储存湿度、包装、时长", "水、温度、区域、海拔", "研磨粗细、萃取时间、水温"], "ans": 2}, {"cat": "种植", "q": "咖啡豆中糖类的生成主要依赖什么作用？", "opts": ["酶促水解", "热解反应", "光合作用", "发酵作用"], "ans": 2}, {"cat": "种植", "q": "“日晒种植”（全日照无遮荫）的主要优势是什么？", "opts": ["风味更复杂", "产量大", "抗病力更强", "需水量更少"], "ans": 1}, {"cat": "种植", "q": "把咖啡树种在别的树旁边（遮荫种植），是否会因此获得其他风味？", "opts": ["会有花香", "会有坚果香", "会明显更甜", "不会，没有其他风味的影响"], "ans": 3}, {"cat": "种植", "q": "阿拉比卡适合种植的区域位于哪里？", "opts": ["仅赤道正下方一条线", "南北温带高纬度区", "南北极圈以内", "南北回归线之间"], "ans": 3}, {"cat": "种植", "q": "“晒床”（非洲晒床）的优点是什么？", "opts": ["没有污染、方便移动", "适合大规模机械处理", "无需人工翻动", "干燥快到可全天直晒"], "ans": 0}, {"cat": "种植", "q": "咖啡干燥过程中的温度应控制在多少以内？", "opts": ["不超过60℃", "50-70℃", "不超过40℃", "只要不焦、温度无上限"], "ans": 2}, {"cat": "种植", "q": "脱壳前对咖啡生豆的筛选依据有哪些？", "opts": ["品种、海拔、年份、批次", "产地、庄园、处理厂、认证", "烘焙度、密度、含水率、酸度", "大小、重量、目数、颜色"], "ans": 3}, {"cat": "其他", "q": "Q Grader 认证的有效期是多久？", "opts": ["3年", "5年", "1年", "终身有效"], "ans": 0}, {"cat": "其他", "q": "Q 证补考的时效是多久？", "opts": ["24个月", "12个月", "18个月", "6个月"], "ans": 2}, {"cat": "其他", "q": "申请担任 Q 助教的条件是什么？", "opts": ["需执业满5年", "完成一个3年周期后，第二年可以申请", "完成两个3年周期", "刚考取Q证即可申请"], "ans": 1}, {"cat": "其他", "q": "Q 考试中给豆子打分需要盲测几杯样本？", "opts": ["8个", "3个 Q 盲测样本", "5个", "1个"], "ans": 1}, {"cat": "其他", "q": "给豆子打完分后，学员会获得什么？", "opts": ["烘焙经营许可", "咖啡师执照", "技术报告证书", "庄园认证证书"], "ans": 2}, {"cat": "其他", "q": "咖啡中“醋酸”的形成主要来自什么？", "opts": ["发酵和烘焙", "水洗时的浸泡", "土壤的吸收", "光合作用直接合成"], "ans": 0}, {"cat": "其他", "q": "烘焙过程中会“增加”的酸有哪些？", "opts": ["乳酸和醋酸", "绿原酸", "柠檬酸和苹果酸", "奎宁酸"], "ans": 0}, {"cat": "其他", "q": "烘焙过程中会“减少”的酸有哪些？", "opts": ["柠檬酸、苹果酸、绿原酸、奎宁酸等", "只会减少醋酸一种", "乳酸和醋酸", "烘焙中没有任何酸减少"], "ans": 0}, {"cat": "其他", "q": "咖啡中最容易挥发的酸是哪种？", "opts": ["柠檬酸", "苹果酸", "乳酸", "醋酸"], "ans": 3}, {"cat": "其他", "q": "下列哪一种酸不属于有机酸？", "opts": ["柠檬酸", "磷酸", "乳酸", "苹果酸"], "ans": 1}, {"cat": "其他", "q": "在咖啡中对整体风味影响较大（较主导）的酸是哪种？", "opts": ["乳酸", "柠檬酸", "磷酸", "醋酸"], "ans": 1}, {"cat": "其他", "q": "两种主要咖啡豆种及其大致占比是？", "opts": ["罗布斯塔70%、阿拉比卡30%", "阿拉比卡90%、罗布斯塔10%", "阿拉比卡与罗布斯塔各占50%", "阿拉比卡约70%、罗布斯塔约30%"], "ans": 3}, {"cat": "其他", "q": "从外到内，咖啡果实的组成依次包括哪些？", "opts": ["只有外果皮和种子两层", "银皮在羊皮纸外侧且无中央线", "外果皮、果肉、果胶、羊皮纸、银皮、胚芽、中央线", "外果皮、果肉、果核三层"], "ans": 2}, {"cat": "其他", "q": "咖啡种子在苗圃育苗约需要多长时间？", "opts": ["6个月", "2年", "3-5年", "1年"], "ans": 1}, {"cat": "其他", "q": "咖啡树第一次结果大约需要多久？", "opts": ["7-8年", "3-5年", "2年", "1年"], "ans": 1}, {"cat": "其他", "q": "从苗圃移栽后，咖啡树大约多久进入经济生产期？", "opts": ["移栽后5-8年", "移栽后10年以上", "移栽后1-3年开始生产经济作物", "移栽当年立即结果"], "ans": 2}, {"cat": "其他", "q": "“全日晒”（全日照种植）面积较大的国家是哪个？", "opts": ["危地马拉", "印度尼西亚", "埃塞俄比亚", "巴西"], "ans": 3}, {"cat": "其他", "q": "当在咖啡豆中发现两种瑕疵时，应如何处理？", "opts": ["优先选择对杯测影响更大的那种瑕疵", "两类各计半次", "任选其一计一次", "忽略不太重要的"], "ans": 0}, {"cat": "其他", "q": "关于烘焙对咖啡因的影响，下列说法正确的是？", "opts": ["烘焙会使咖啡因分解减少", "烘焙中咖啡因的含量不会改变", "深烘焙会让咖啡因增加", "烘焙会使咖啡因挥发殆尽"], "ans": 1}, {"cat": "其他", "q": "咖啡中常见的酸类物质包括哪些？", "opts": ["琥珀酸、草酸、酒石酸", "苹果酸、柠檬酸、醋酸、磷酸、奎宁酸、乳酸", "棕榈酸、硬脂酸、亚油酸", "仅抗坏血酸和泛酸"], "ans": 1}, {"cat": "其他", "q": "在细胞呼吸阶段会形成的酸是哪些？", "opts": ["磷酸", "苹果酸和柠檬酸", "醋酸和乳酸", "奎宁酸和绿原酸"], "ans": 1}, {"cat": "其他", "q": "烘焙时“柠檬酸和苹果酸”的变化趋势是？", "opts": ["减少", "不变", "增加", "先减后增"], "ans": 0}, {"cat": "其他", "q": "烘焙过程中因绿原酸分解而少量增加的酸是哪种？", "opts": ["柠檬酸", "醋酸", "奎宁酸", "苹果酸"], "ans": 2}, {"cat": "其他", "q": "在湿处理（水洗发酵）过程中主要产生的酸是哪种？", "opts": ["苹果酸", "乳酸", "磷酸", "柠檬酸"], "ans": 1}, {"cat": "其他", "q": "烘焙过程中乳酸的变化趋势是？", "opts": ["持续减少", "持续增加", "保持不变", "先增后减"], "ans": 1}, {"cat": "其他", "q": "关于舌乳突与味觉的对应关系，下列说法正确的是？", "opts": ["菌状乳突感知苦、叶状乳突感知甜", "轮廓状乳突感知甜、菌状乳突感知咸", "叶状乳突只在舌尖感知鲜味", "轮廓状乳突感知苦、菌状乳突感知甜、叶状乳突在舌两侧感知酸和咸"], "ans": 3}, {"cat": "其他", "q": "味觉能力在人口中的分布比例约为？", "opts": ["正常占50%，敏感者与不敏感者各占25%", "正常40%、敏感45%、不敏感15%", "正常70%、敏感20%、不敏感10%", "正常30%、敏感30%、不敏感40%"], "ans": 0}, {"cat": "课程补充", "q": "常见的三大咖啡处理法是什么？", "opts": ["日晒法、水洗法、蜜处理", "蜜处理、冷萃、低温慢煮", "水洗、浸泡、冰滴", "日晒、蒸汽、酶解"], "ans": 0}, {"cat": "课程补充", "q": "“日晒法”咖啡的口感特点是什么？", "opts": ["口感清淡、无杂味", "明亮酸质、更干净", "果干调性、更甜、层次高", "咸鲜感强、极厚重"], "ans": 2}, {"cat": "课程补充", "q": "“水洗法”咖啡的口感特点是什么？", "opts": ["明亮的酸质、更干净", "烟熏感强", "闷甜、厚重", "果干甜、层次高"], "ans": 0}, {"cat": "课程补充", "q": "咖啡鲜果的采收方式有哪些？", "opts": ["空中机器采收", "只有手工选摘一种", "机械采收（商业）、手工选摘（精品）、手工片摘", "只有机械采收一种"], "ans": 2}, {"cat": "课程补充", "q": "全球最大的罗布斯塔咖啡产区（国家）是哪个？", "opts": ["印度尼西亚", "哥伦比亚", "越南", "巴西"], "ans": 2}, {"cat": "课程补充", "q": "咖啡中的“磷酸”主要来自哪里？", "opts": ["烘焙热解", "发酵微生物", "土壤", "树木蒸腾"], "ans": 2}, {"cat": "课程补充", "q": "“苹果酸”这一名称源自最初从哪里发现？", "opts": ["葡萄发酵", "苹果", "土壤矿物质", "咖啡果实"], "ans": 1}, {"cat": "课程补充", "q": "绿原酸在烘焙中的分解大约开始于什么阶段？", "opts": ["120℃-转黄阶段", "研磨萃取时", "一爆之后", "二爆之后"], "ans": 0}, {"cat": "课程补充", "q": "烘焙中“柠檬酸和苹果酸”的变化趋势是？", "opts": ["保持不变", "逐渐增加", "逐渐减少", "先增后减"], "ans": 2}, {"cat": "课程补充", "q": "烘焙中“醋酸”的变化趋势是？", "opts": ["全程保持不变", "全程持续增加", "开始烘焙逐渐增加，二爆左右开始减少", "一开始就减少"], "ans": 2}, {"cat": "课程补充", "q": "烘焙中“乳酸”的变化趋势是？", "opts": ["保持不变", "二爆后骤降", "逐渐减少", "逐渐增加"], "ans": 3}, {"cat": "课程补充", "q": "烘焙中“绿原酸”的变化结果是什么？", "opts": ["分解成奎宁酸和咖啡酸", "完全挥发、无残留", "分解为醋酸和乳酸", "转化为蔗糖"], "ans": 0}, {"cat": "课程补充", "q": "影响酸度的气候与土壤因素有哪些？", "opts": ["仅海拔和纬度两项", "仅烘焙和研磨两项", "能量、日照、温度、水、土壤；其他包括降雨量、海拔、纬度", "仅储存时长与包装"], "ans": 2}, {"cat": "课程补充", "q": "真正“精品级”的咖啡约占世界咖啡总产量的比例是多少？", "opts": ["30%", "1%", "10%", "50%"], "ans": 2}, {"cat": "课程补充", "q": "咖啡生豆合约通常包含哪些要素？", "opts": ["仅付款方式和折扣", "价格、种类、质量的规格、数量、交货时间和地点", "仅产地和烘焙度", "仅数量和单价"], "ans": 1}, {"cat": "课程补充", "q": "一杯滤泡咖啡的组成约为？", "opts": ["90%的水 + 10%的可溶性固体", "80%的水 + 20%的可溶性固体", "99.9%的水 + 0.1%的可溶性固体", "98-99%的水 + 1-2%的可溶性固体"], "ans": 3}, {"cat": "课程补充", "q": "可溶性固体的提取量主要取决于哪些因素？", "opts": ["研磨度（粗细）、接触时间长短、水温", "杯量、杯数、糖量", "海拔、品种、处理法", "氧化程度、储存湿度"], "ans": 0}, {"cat": "课程补充", "q": "咖啡焙烤（烘焙）分哪两个阶段进行？", "opts": ["1.初始（切入）-吸热反应；2.最后阶段-放热反应", "1.黄变阶段；2.出油阶段", "1.一爆；2.二爆", "1.脱水阶段；2.冷却阶段"], "ans": 0}, {"cat": "课程补充", "q": "烘焙较浅、带谷物烤面包花生香且酸度较低的咖啡，其口感特点是？", "opts": ["完全没有任何香气", "酸度极高且果香浓郁", "焦苦味极重", "带谷物、烤面包、花生的香气且酸度较低"], "ans": 3}, {"cat": "课程补充", "q": "咖啡烘到颜色很深，重量损失超过多少时会降低酸度？", "opts": ["超过30%", "超过50%", "超过15%的重量损失", "超过5%"], "ans": 2}, {"cat": "课程补充", "q": "对咖啡熟豆“衰退（老化）”贡献最大的两个因素是什么？", "opts": ["咖啡因与绿原酸", "温度与压力", "氧气与水分", "光照与噪音"], "ans": 2}, {"cat": "课程补充", "q": "PH 数值中，较低还是较高的数字代表更酸？", "opts": ["较低的数字代表更酸", "两者相同", "与数字无关，看指示剂颜色", "较高的数字代表更酸"], "ans": 0}, {"cat": "课程补充", "q": "中性 PH 值是多少？", "opts": ["5", "7", "1", "9"], "ans": 1}, {"cat": "课程补充", "q": "水的 PH 值约为多少？", "opts": ["8.5", "7", "3", "5"], "ans": 1}, {"cat": "课程补充", "q": "一杯冲煮好的咖啡 PH 值约为多少？", "opts": ["11", "5", "7", "9"], "ans": 1}, {"cat": "课程补充", "q": "咖啡中被归类为“有机酸”的有哪些？", "opts": ["仅磷酸一种", "磷酸和盐酸", "奎宁酸单独即全部", "柠檬酸、苹果酸、醋酸、乳酸"], "ans": 3}, {"cat": "课程补充", "q": "咖啡中的“磷酸”属于哪一类酸？", "opts": ["氨基酸", "有机酸", "无机酸", "脂肪酸"], "ans": 2}, {"cat": "课程补充", "q": "咖啡中属于“挥发性”的酸有哪些？", "opts": ["苹果酸", "磷酸", "柠檬酸", "醋酸、乳酸"], "ans": 3}, {"cat": "课程补充", "q": "咖啡中酸类物质的来源主要是？", "opts": ["冲泡用水中带入", "天然的有机酸", "烘焙时人工合成", "人为添加的食品添加剂"], "ans": 1}, {"cat": "课程补充", "q": "“柠檬酸”含量较高的咖啡豆种是哪个？", "opts": ["恰特豆", "利比里卡", "阿拉比卡", "罗布斯塔"], "ans": 2}, {"cat": "课程补充", "q": "“苹果酸”含量较高的咖啡豆种是哪个？", "opts": ["恰特豆", "阿拉比卡", "罗布斯塔", "利比里卡"], "ans": 1}, {"cat": "课程补充", "q": "“磷酸”含量较高的咖啡豆种是哪个？", "opts": ["利比里卡", "恰特豆", "阿拉比卡", "罗布斯塔"], "ans": 3}, {"cat": "课程补充", "q": "咖啡中醋酸的重要来源是什么？", "opts": ["发酵过程中微生物的代谢", "光合作用直接合成", "冲泡用水中的氯", "土壤中的富集"], "ans": 0}, {"cat": "嗅觉", "q": "嗅觉“记忆”与嗅觉“辨认”的区别是什么？", "opts": ["辨认不需要记忆参与", "两者之间毫无关联", "记忆无需通过感知建立", "我们只能辨认已知的味道；感知到的一切都与记忆中以前记录的信息比对，识别速度更快"], "ans": 3}, {"cat": "嗅觉", "q": "“鼻前嗅觉”感知的内容是什么？", "opts": ["闻/嗅——干香、湿香", "啜吸时的风味和余韵", "咽喉后部的感受", "口腔的触感"], "ans": 0}, {"cat": "嗅觉", "q": "“鼻后嗅觉”感知的内容是什么？", "opts": ["仅杯测前的闻香瓶", "啜吸时的湿香、风味、余韵", "嗅杯面的干香前段", "闻干香"], "ans": 1}, {"cat": "嗅觉", "q": "在杯测表上哪个环节最可能感受到“花果组群”的味道？", "opts": ["干香", "余韵", "体质感", "醇厚度"], "ans": 0}, {"cat": "嗅觉", "q": "在杯测表上哪个环节最可能感受到“焦糖组群”的味道？", "opts": ["酸质", "余韵", "湿香", "干香"], "ans": 2}, {"cat": "嗅觉", "q": "在杯测表上哪个环节最可能感受到“干馏组群”的味道？", "opts": ["干香", "湿香", "平衡", "余韵"], "ans": 3}, {"cat": "嗅觉", "q": "“其他组群”的味道在杯测中最可能在哪个环节被感知到？", "opts": ["仅余韵", "仅干香", "仅酸质", "每个环节都可能"], "ans": 3}, {"cat": "味觉补充", "q": "向水中添加哪三种元素可以制成对应人体味觉的水溶液？", "opts": ["咸、鲜、涩", "苦、辣、鲜", "酸、甜、咸", "甜、苦、麻"], "ans": 2}, {"cat": "味觉补充", "q": "哪一个舌乳突以感知“苦”为主要形态？", "opts": ["轮廓状乳突", "丝状乳突", "叶状乳突", "菌状乳突"], "ans": 0}, {"cat": "味觉补充", "q": "哪一个舌乳突以感知“甜”为主要形态？", "opts": ["叶状乳突", "轮廓状乳突", "菌状乳突", "丝状乳突"], "ans": 2}, {"cat": "味觉补充", "q": "哪一个舌乳突能显著感知“酸”和“咸”？", "opts": ["丝状乳突", "轮廓状乳突", "叶状乳突", "菌状乳突"], "ans": 2}, {"cat": "味觉补充", "q": "人类对哪种味道最敏感？", "opts": ["苦", "甜", "鲜", "咸"], "ans": 0}, {"cat": "味觉补充", "q": "人类对哪种味道最不敏感？", "opts": ["苦", "酸", "甜", "咸"], "ans": 2}, {"cat": "味觉补充", "q": "“超级敏感者”占人口的比例是多少？", "opts": ["10%", "40%", "25%", "5%"], "ans": 2}, {"cat": "味觉补充", "q": "“不敏感者”占人口的比例是多少？", "opts": ["10%", "25%", "5%", "40%"], "ans": 1}, {"cat": "味觉补充", "q": "拥有“普通感官能力”的人口占比是多少？", "opts": ["30%", "70%", "25%", "50%"], "ans": 3}, {"cat": "味觉补充", "q": "哪一类人群最有可能成为 Q 阿拉比卡品鉴师？", "opts": ["不敏感者", "超级敏感者", "一般人（感官正常人群）", "嗅觉缺失者"], "ans": 2}, {"cat": "烘焙深浅", "q": "按 SCA 样品烘焙规范烘焙的咖啡具有哪些特点？", "opts": ["无甜无酸、闷甜", "颜色不均、酸涩尖短", "颜色均匀、平衡的体质感、甜味酸味均衡", "表面出油、干馏香浓"], "ans": 2}, {"cat": "烘焙深浅", "q": "烘焙“比 SCA 样品烘焙规范更浅”的咖啡有什么特点？", "opts": ["甜酸均衡、颜色均匀", "体质感浓郁、酸质暗淡", "余韵重且长、表面油亮", "渣面较薄、熟豆表面不光滑、体质感薄、酸质尖短、略带涩感"], "ans": 3}, {"cat": "烘焙深浅", "q": "烘焙“比 SCA 样品烘焙规格更深”的咖啡有什么特点？", "opts": ["酸质尖短明亮、体质感薄", "颜色浅淡、无油光", "涩感强、几乎无香气", "杯测渣面较厚、表面出油、干馏香、体质感浓郁、酸质暗淡、余韵重且长"], "ans": 3}, {"cat": "烘焙深浅", "q": "“烘焙时间太长而热量太少”的咖啡有什么特点？", "opts": ["有明显二爆、焦香浓郁", "没有一爆、颜色均匀、低度微弱、淡酸质、有棕色纸味、谷物类鼻后嗅觉、味集中在余韵", "甜度高且层次丰富", "酸质极明亮活泼"], "ans": 1}, {"cat": "烘焙深浅", "q": "按 Agtron 标准，SCA 样品烘焙的数值应是多少？", "opts": ["53±1", "63±1", "73±1", "80±1"], "ans": 1}, {"cat": "生豆分级", "q": "生豆分级之所以重要，主要因为什么？", "opts": ["仅为包装外观好看", "只为提高售价", "定义采购合同条款、用于品质检查、明确精品缺陷清单、增强可追溯性与沟通性", "只为统计产量"], "ans": 2}, {"cat": "生豆分级", "q": "生豆分级标准的 4 个要素是什么？", "opts": ["瑕疵类型、颜色、气味、含水率", "品种、海拔、处理法、庄园", "烘焙度、密度、大小、年份", "酸度、甜度、苦度、醇厚度"], "ans": 0}, {"cat": "生豆分级", "q": "SCA 生豆分级标准允许多少个主要/一级缺陷？", "opts": ["最多5个", "0个", "最多3个", "最多1个"], "ans": 1}, {"cat": "生豆分级", "q": "SCA 生豆分级标准允许多少个次要/二级缺陷？", "opts": ["最多5个", "最多10个", "最多1个", "最多3个"], "ans": 0}, {"cat": "生豆分级", "q": "精品等级允许的主要（第1类）和次要（第2类）缺陷数各是多少？", "opts": ["第1类最多5个、第2类最多20个", "第1类0个、第2类0个", "第1类最多2个、第2类最多10个", "第1类0个、第2类最多5个"], "ans": 3}, {"cat": "生豆分级", "q": "生豆分级的样品量是多少？", "opts": ["500g", "100g", "250g", "350g"], "ans": 3}, {"cat": "生豆分级", "q": "什么是“奎克豆”（Quaker）？", "opts": ["被虫蛀的豆子", "表面过度出油的豆子", "发酵过度的豆子", "糖分不足、没有梅拉德反应、颜色浅的豆子"], "ans": 3}, {"cat": "生豆分级", "q": "SCA 标准中允许的奎克豆数量是多少？", "opts": ["最多3个", "0个", "最多1个", "最多5个"], "ans": 1}, {"cat": "生豆分级", "q": "CQI 精品等级定义中允许的奎克豆数量是多少？", "opts": ["最多3个", "最多1个", "最多5个", "0个"], "ans": 0}, {"cat": "生豆分级", "q": "精品级咖啡的含水率（湿度）标准是多少？", "opts": ["20%以上", "10%-12%", "15%-18%", "5%-8%"], "ans": 1}, {"cat": "生豆分级", "q": "单独因为“颜色”一项就判定咖啡不符合精品等级，是否正确？", "opts": ["否，颜色不作为单独判定不符合精品等级的依据", "是，必须达到深褐色", "是，必须颜色均匀的浅绿", "是，颜色越深越好"], "ans": 0}, {"cat": "CQI协会", "q": "CQI（咖啡质量学会）成立于哪一年、属于什么性质？", "opts": ["1996年成立，非营利慈善教育信托机构", "2005年成立、政府机构", "1980年成立、营利性企业", "2010年成立、行业协会"], "ans": 0}, {"cat": "CQI协会", "q": "CQI 的使命是什么？", "opts": ["扩大某单一品牌市场份额", "让咖啡售价最大化", "统一全球咖啡口味", "改善咖啡的质量和咖啡生产者的生活"], "ans": 3}, {"cat": "CQI协会", "q": "CQI 的认证培训针对哪些豆种、围绕哪 3 个维度展开？", "opts": ["仅阿拉比卡；烘焙、研磨、萃取", "仅罗布斯塔；种植、销售、品鉴", "两类豆；酸度、苦度、甜度", "阿拉比卡和罗布斯塔；咖啡质量、咖啡工艺、咖啡价值链"], "ans": 3}, {"cat": "CQI协会", "q": "CQI 的愿景是什么？", "opts": ["让所有咖啡价格趋同", "减少精品咖啡的产量", "取消咖啡分级制度", "确保以质量为中心的咖啡标准和最佳实践得到市场的奖励，使咖啡业得以繁荣"], "ans": 3}, {"cat": "CQI协会", "q": "CQI“合作建立专案之后……”强调应具备什么能力？", "opts": ["单一营销", "快速退出", "一次性交付", "持续发展的能力"], "ans": 3}, {"cat": "CQI协会", "q": "CQI 提供的“工具箱”内容是什么？", "opts": ["仅杯测表格", "仅营销话术", "创新且相关的教育产品和工具箱", "仅烘焙设备"], "ans": 2}, {"cat": "CQI协会", "q": "CQI 主要通过什么方式为生产者带来经济利益？", "opts": ["取消中间商定价", "促进市场联系", "强制统一收购价", "直接发放补贴"], "ans": 1}, {"cat": "CQI协会", "q": "CQI 创建并支持的是一个什么样的平台？", "opts": ["由专家与高手组成的全球平台", "封闭的内部俱乐部", "政府监管系统", "仅限本地的工厂联盟"], "ans": 0}, {"cat": "CQI协会", "q": "“QE 计划”的核心目标是什么？", "opts": ["培训咖啡师拉花技巧", "用全球通用的咖啡品质语言培训 Q 阿拉比卡鉴定师和专业杯测人士", "教生豆商办理报关", "培训咖啡机维修师"], "ans": 1}, {"cat": "CQI协会", "q": "“PHP 计划”是关于什么的？", "opts": ["营销门店的经营", "烘焙设备的维护", "了解咖啡采摘后会发生什么，进而产生相关知识与技能", "杯测表格的填写"], "ans": 2}, {"cat": "CQI协会", "q": "谁拥有并管理 Q 计划与 Q 样本系统？", "opts": ["WBC 世界咖啡师大赛", "CQI", "SCA", "美国咖啡协会"], "ans": 1}, {"cat": "CQI协会", "q": "Q 系统评估共需要多少项活动/校准？", "opts": ["15项", "30项", "10项", "22项"], "ans": 3}, {"cat": "CQI协会", "q": "送样进行 Q 咖啡认证后，可能获得哪 2 类文件结果？", "opts": ["农药检测报告 + 价格单", "Q认证 + Q评估报告", "烘焙证书 + 庄园证明", "物流单 + 清关证明"], "ans": 1}, {"cat": "CQI协会", "q": "为成功完成 Q 所有科目，允许参加课程的次数限制是？", "opts": ["只能参加1次", "最多5次", "最多3次", "无硬性的次数限制"], "ans": 3}, {"cat": "第1章｜CVA 核心框架", "q": "CVA框架中，主要回答“这杯咖啡呈现出什么感官特征”的评估是？", "opts": ["Descriptive Assessment（描述性评估）", "Affective Assessment（情感/价值评估）", "Extrinsic Assessment（外在属性评估）", "Physical Assessment（物理评估）"], "ans": 0}, {"cat": "第1章｜CVA 核心框架", "q": "CVA框架中，主要表达品评者对咖啡品质印象或价值判断的是？", "opts": ["Physical Assessment", "Descriptive Assessment", "Affective Assessment", "Moisture Assessment"], "ans": 2}, {"cat": "第1章｜CVA 核心框架", "q": "下列哪项最符合Extrinsic Assessment（外在属性评估）的范围？", "opts": ["酸质强度", "花香强度", "产地、品种、处理法等非杯中感官信息", "余韵长度"], "ans": 2}, {"cat": "第1章｜CVA 核心框架", "q": "Physical Assessment主要关注什么？", "opts": ["咖啡的品牌故事", "生豆/样品的可测物理属性与缺陷", "杯测者是否喜欢咖啡", "香气描述词数量"], "ans": 1}, {"cat": "第1章｜CVA 核心框架", "q": "为什么CVA强调把Descriptive与Affective分开？", "opts": ["为了减少研磨时间", "为了区分“感知到什么”和“如何评价它”", "为了取消杯测", "为了只保留分数"], "ans": 1}, {"cat": "第1章｜CVA 核心框架", "q": "描述性评估中，强度量表的主要用途是？", "opts": ["表示咖啡价格", "表示某一感官属性被感知的程度", "表示杯测者资历", "表示生豆等级"], "ans": 1}, {"cat": "第1章｜CVA 核心框架", "q": "关于“强度”和“品质”的关系，正确的是？", "opts": ["强度越高品质一定越高", "强度越低品质一定越差", "强度描述感知程度，品质是另一维度的判断", "两者完全相同"], "ans": 2}, {"cat": "第1章｜CVA 核心框架", "q": "进行专业感官评价时，校准（calibration）的主要目的是什么？", "opts": ["让所有人写完全相同的风味词", "提高不同品评者对尺度和参照物的共同理解", "让所有咖啡得分一样", "减少样品数量"], "ans": 1}, {"cat": "第1章｜CVA 核心框架", "q": "重复样（replicate）在感官评价中的主要作用之一是？", "opts": ["增加咖啡价格", "检查品评者与方法的重复性/稳定性", "改变处理法", "增加香气"], "ans": 1}, {"cat": "第1章｜CVA 核心框架", "q": "盲评的重要价值之一是？", "opts": ["提高水温", "降低品牌、价格、产地预期等信息造成的偏差", "让咖啡更甜", "改变烘焙度"], "ans": 1}, {"cat": "第1章｜CVA 核心框架", "q": "嗅觉感知中，挥发性化合物主要通过什么方式被感知？", "opts": ["只通过舌头", "嗅觉系统", "只通过牙齿", "只通过皮肤"], "ans": 1}, {"cat": "第1章｜CVA 核心框架", "q": "鼻后嗅觉（retronasal olfaction）通常发生在？", "opts": ["只闻干粉时", "咖啡入口后，挥发物由口腔后部进入鼻腔时", "称豆时", "烘焙前"], "ans": 1}, {"cat": "第1章｜CVA 核心框架", "q": "下列哪项属于基本味觉范畴，而不是香气描述？", "opts": ["茉莉", "柑橘", "甜", "焦糖香"], "ans": 2}, {"cat": "第1章｜CVA 核心框架", "q": "酸味主要由哪类感官系统直接检测？", "opts": ["味觉", "视觉", "听觉", "触觉"], "ans": 0}, {"cat": "第1章｜CVA 核心框架", "q": "“Body/口感”更接近哪类感官信息？", "opts": ["触觉/口腔体感", "视觉", "听觉", "外在信息"], "ans": 0}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "感官适应（adaptation）是指？", "opts": ["持续刺激后对该刺激敏感度下降", "咖啡自动变甜", "烘焙自动变浅", "研磨度自动变化"], "ans": 0}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "阈值（threshold）在感官科学中通常指？", "opts": ["咖啡价格上限", "某刺激能被检测或识别所需的最低水平附近", "烘焙机容量", "杯子容量"], "ans": 1}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "三角测试（triangle test）通常用于？", "opts": ["判断三个样品哪个最贵", "检测两个产品之间是否存在可感知差异", "计算含水率", "测量豆目"], "ans": 1}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "在三角测试中，典型设置是？", "opts": ["三杯全部不同", "两杯相同、一杯不同", "一杯咖啡两杯水", "必须四杯"], "ans": 1}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "感官测试中随机化样品顺序主要是为了？", "opts": ["改变咖啡风味", "降低顺序效应和位置偏差", "增加萃取率", "改变水质"], "ans": 1}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "专业杯测时，样品编码最好？", "opts": ["直接写品牌和价格", "使用不暗示身份或品质的代码", "写产地排名", "写预期分数"], "ans": 1}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "WCR Sensory Lexicon的主要价值是？", "opts": ["给所有咖啡定价", "为咖啡感官属性提供系统化词汇和参照体系", "替代烘焙机", "只用于生豆贸易合同"], "ans": 1}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "SCA Coffee Taster's Flavor Wheel的主要用途是？", "opts": ["测量含水率", "辅助组织和沟通咖啡风味描述", "测量密度", "计算烘焙损耗"], "ans": 1}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "使用风味轮时，较合理的做法是？", "opts": ["从具体词强行猜到大类", "先确定较宽泛类别，再向更具体描述移动", "只看颜色选词", "每杯必须写十个词"], "ans": 1}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "风味描述词的最佳使用原则是？", "opts": ["越复杂越专业", "以实际感知和可沟通性为基础", "必须写稀有水果", "必须与别人完全相同"], "ans": 1}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "参照物（reference standards）的主要作用是？", "opts": ["让咖啡变香", "建立感官属性的共同锚点", "提高烘焙温度", "代替所有咖啡样品"], "ans": 1}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "如果一名杯测者知道某样品价格极高后给出更高品质评价，这最可能属于？", "opts": ["预期/认知偏差", "温度效应", "研磨效应", "密度效应"], "ans": 0}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "“Halo effect（光环效应）”在感官评价中可能表现为？", "opts": ["一个突出的正面特征影响对其他维度的判断", "水温降低", "样品变冷", "杯子反光"], "ans": 0}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "品评者疲劳最可能导致？", "opts": ["感知稳定性下降", "生豆含水率上升", "咖啡因消失", "豆目变大"], "ans": 0}, {"cat": "第2章｜感官科学、风味语言与偏差控制", "q": "杯测环境应优先做到？", "opts": ["强烈香水和背景音乐", "尽量减少异味、噪声和不必要干扰", "越暗越好", "温度越高越好"], "ans": 1}, {"cat": "第3章｜杯测制备与感官属性", "q": "杯测前使用浓烈香水最主要的问题是？", "opts": ["可能干扰嗅觉判断", "会改变豆子尺寸", "会提高TDS", "会改变处理法"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "杯测样品之间保持一致的研磨设置主要是为了？", "opts": ["控制制备变量", "让所有豆子颜色一样", "提高价格", "改变产地"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "杯测中使用一致粉水比的核心原因是？", "opts": ["保证比较条件尽量一致", "让所有咖啡分数相同", "消除所有感官差异", "改变品种"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "水质会影响咖啡杯测结果吗？", "opts": ["不会", "会，矿物组成等可影响萃取与感官表现", "只有水颜色有影响", "只影响杯子"], "ans": 1}, {"cat": "第3章｜杯测制备与感官属性", "q": "如果不同样品使用明显不同温度的冲煮水，最大问题是？", "opts": ["比较条件不一致", "豆子会变成不同品种", "咖啡因会消失", "不会有任何影响"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "杯测烘焙的主要目标是？", "opts": ["最大化深烘焙味", "以一致、适合评价的方式呈现样品特征", "模仿意式浓缩", "掩盖缺陷"], "ans": 1}, {"cat": "第3章｜杯测制备与感官属性", "q": "烘焙过深可能对感官评价造成什么影响？", "opts": ["烘焙产生的风味可能遮盖部分原料差异", "生豆尺寸增大", "产区改变", "处理法改变"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "研磨后放置过久再评估干香，可能发生？", "opts": ["挥发性香气损失", "豆子恢复成生豆", "密度大幅增加", "品种改变"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "干香（fragrance）通常主要指？", "opts": ["加水前研磨咖啡释放的香气", "咖啡入口后的触觉", "生豆颜色", "杯子气味"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "破渣（break）时进行嗅闻的主要原因之一是？", "opts": ["释放并集中感知湿香气", "测量豆目", "改变品种", "测量海拔"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "咖啡温度下降后继续品评的重要原因是？", "opts": ["不同温度下感官属性的可感知性会变化", "冷咖啡一定更高分", "热咖啡没有香气", "只为延长考试"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "咖啡冷却时，某些缺陷可能？", "opts": ["变得更容易被感知", "必然消失", "变成甜味", "改变生豆物理等级"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "“Cleanliness/干净度”在感官语境中通常与什么有关？", "opts": ["是否存在不希望出现的干扰性风味", "杯子是否透明", "桌子颜色", "豆袋是否干净"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "余韵（aftertaste）是指？", "opts": ["咖啡吞咽/吐出后仍持续的风味与感受", "干粉重量", "烘焙颜色", "生豆气味"], "ans": 0}, {"cat": "第3章｜杯测制备与感官属性", "q": "Balance（平衡）最合理的理解是？", "opts": ["所有属性强度完全一样", "各感官要素之间形成协调关系", "酸度必须最低", "甜度必须最高"], "ans": 1}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "复杂度（complexity）一定意味着风味词越多越好吗？", "opts": ["是", "否，复杂度应来自可辨识且协调的多层次感官信息", "只要写得多就行", "只看产地"], "ans": 1}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "酸质（acidity）与“酸败/不愉悦酸味”是否等同？", "opts": ["完全等同", "不等同，酸质可以是积极且结构性的感官特征", "只有深烘焙有酸质", "酸质属于外在属性"], "ans": 1}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "甜感在咖啡评价中只能来自加入蔗糖吗？", "opts": ["是", "否，咖啡本身可呈现感知甜感", "只有冷萃有", "只有深烘焙有"], "ans": 1}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "苦味在咖啡中？", "opts": ["永远是缺陷", "是基本味觉之一，其强度与品质需结合情境判断", "不属于味觉", "只由水产生"], "ans": 1}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "涩感（astringency）更接近？", "opts": ["口腔触觉/干燥收敛感", "甜味", "花香", "视觉"], "ans": 0}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "咖啡中的“发酵感”是否必然等于缺陷？", "opts": ["必然", "不必然，需要判断具体感官性质、强度和是否令人不愉悦", "与处理无关", "只存在于水洗咖啡"], "ans": 1}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "Natural（日晒）处理通常意味着？", "opts": ["咖啡果实在较完整状态下干燥，再脱除外层", "必须完全不发酵", "只在非洲使用", "不需要干燥"], "ans": 0}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "Washed（水洗）处理通常包括？", "opts": ["去除果皮/果肉并通过发酵或机械方式处理黏液，随后清洗与干燥", "整果直接烘焙", "不去果皮", "不需要水分控制"], "ans": 0}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "Honey/Pulped Natural类处理的共同特点之一通常是？", "opts": ["去皮后保留一定黏液进行干燥", "必须整果干燥", "完全不含黏液", "必须深烘焙"], "ans": 0}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "处理法对咖啡风味的影响应如何理解？", "opts": ["处理法决定一切", "它是影响因素之一，并与品种、环境、成熟度、发酵、干燥、烘焙等共同作用", "完全没有影响", "只影响颜色"], "ans": 1}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "发酵过程管理不当可能导致？", "opts": ["不希望出现的发酵、腐败或污染相关风味", "海拔改变", "品种改变", "豆目自动一致"], "ans": 0}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "干燥阶段的核心目标之一是？", "opts": ["将水分稳定降低到适合安全储存的范围并避免质量损失", "增加果实成熟度", "改变品种", "提高海拔"], "ans": 0}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "生豆储存时过高水分活度最主要的风险之一是？", "opts": ["微生物活动和品质劣化风险增加", "咖啡自动变成深烘焙", "豆目增加", "咖啡因增加"], "ans": 0}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "含水率（moisture content）与水分活度（water activity）是否完全相同？", "opts": ["完全相同", "不同，它们描述水分状态的不同方面", "只有名称不同", "都是感官分数"], "ans": 1}, {"cat": "第4章｜处理法、生豆物理与烘焙基础", "q": "生豆密度可能受到哪些因素影响？", "opts": ["品种、成熟度、海拔/环境、处理与水分等多因素", "只受包装颜色影响", "只受杯子影响", "完全固定"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "筛网尺寸（screen size）主要描述？", "opts": ["生豆颗粒尺寸分布", "香气强度", "酸度", "咖啡价格"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "豆目越大是否一定杯测品质越高？", "opts": ["一定", "不一定，尺寸与杯中品质不能简单等同", "只有大豆才有香气", "小豆都是缺陷"], "ans": 1}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "生豆物理缺陷评估的主要价值是？", "opts": ["记录样品物理质量与潜在质量风险", "直接决定所有风味词", "替代杯测", "只用于包装设计"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "Quaker（未充分发展豆）在烘焙后常表现为？", "opts": ["颜色明显偏浅，并可能带来谷物、花生等不理想风味", "必然最深", "变成黑豆", "没有任何差异"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "未成熟果采收可能带来？", "opts": ["物理与感官质量风险", "一定增加甜度", "一定提高复杂度", "完全没有影响"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "过熟或受损果实如果管理不当，可能增加？", "opts": ["发酵、腐败或污染风险", "海拔", "豆目标准", "品种纯度"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "咖啡品种（variety）对风味？", "opts": ["可能有显著影响，但不是唯一决定因素", "完全无影响", "决定所有处理法", "只影响豆袋颜色"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "“Terroir/风土”在咖啡语境中通常涉及？", "opts": ["环境条件与生产背景对咖啡表现的综合影响", "只有包装", "只有品牌", "只有杯子形状"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "高海拔咖啡一定比低海拔咖啡品质高吗？", "opts": ["一定", "不一定，海拔是影响因素之一，不能单独决定品质", "低海拔不能种咖啡", "高海拔没有成熟问题"], "ans": 1}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "Arabica与Canephora（Robusta）是？", "opts": ["咖啡属中的不同物种", "两种烘焙度", "两种杯测杯", "两种水质"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "咖啡果实成熟过程中通常会发生？", "opts": ["化学组成与感官前体发生变化", "品种改变", "海拔改变", "处理法自动确定"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "烘焙中的Maillard reaction（美拉德反应）主要涉及？", "opts": ["还原糖与含氮化合物等发生复杂反应", "只有水蒸发", "只有咖啡因生成", "生豆发芽"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "Caramelization（焦糖化）主要与什么有关？", "opts": ["糖类受热发生分解和转化", "蛋白质冻结", "水结冰", "生豆发芽"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "烘焙发展程度改变会？", "opts": ["改变挥发性香气、酸苦平衡及口感等感官表现", "改变咖啡物种", "改变种植海拔", "不影响感官"], "ans": 0}, {"cat": "第5章｜萃取、水质与数据可靠性", "q": "烘焙后脱气（degassing）主要释放？", "opts": ["以二氧化碳为主的气体", "氧气", "氮气", "水"], "ans": 0}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "咖啡烘焙后长期暴露于氧气通常会？", "opts": ["加速氧化和香气衰退", "永久增加新鲜度", "提高海拔", "改变品种"], "ans": 0}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "研磨越细，在其他条件相同时通常会？", "opts": ["增大表面积并改变萃取动力学", "降低表面积", "改变产地", "改变物种"], "ans": 0}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "萃取不足的咖啡常可能表现为？", "opts": ["某些酸、尖锐、薄弱或发展不足的感受", "必然极苦", "必然无酸", "物种改变"], "ans": 0}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "过度萃取可能出现？", "opts": ["苦、干、涩等不理想感受增加", "必然变甜", "咖啡因消失", "产地改变"], "ans": 0}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "TDS在咖啡冲煮语境中通常指？", "opts": ["Total Dissolved Solids，总溶解固体浓度", "Total Dry Seed", "Taste Description Score", "Temperature Distribution Scale"], "ans": 0}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "Extraction Yield（萃取率）主要表示？", "opts": ["从干咖啡粉中被溶解到饮料中的物质比例", "杯子装满比例", "生豆缺陷率", "烘焙机效率"], "ans": 0}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "TDS高是否必然代表萃取率高？", "opts": ["必然", "不必然，两者相关但还取决于粉量、饮料量等", "两者完全无关", "TDS是风味分数"], "ans": 1}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "水的碱度可能影响？", "opts": ["咖啡酸感的表达与缓冲", "豆子物种", "产地", "包装尺寸"], "ans": 0}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "硬度与碱度是否完全等同？", "opts": ["是", "否，是不同的水化学概念", "只有名称不同", "都是感官评分"], "ans": 1}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "在感官评价中，precision（精密度/重复性）更强调？", "opts": ["多次测量结果彼此接近", "结果一定接近真值", "咖啡一定高分", "风味词越多越好"], "ans": 0}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "Accuracy（准确性）与precision（精密度）？", "opts": ["是完全相同概念", "可以不同，需要分别理解", "都只表示杯测分数", "只用于烘焙"], "ans": 1}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "感官小组中出现离群结果时，最合理的处理思路是？", "opts": ["立即认定该人错误", "检查样品、制备、记录、感官状态和校准等原因", "删除所有数据", "修改样品身份"], "ans": 1}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "专业品评记录最重要的原则之一是？", "opts": ["及时、清晰、可追溯", "事后凭记忆补写", "只记总分", "用模糊词"], "ans": 0}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "如果两个杯测者对同一咖啡使用不同描述词，这是否必然表示其中一人错误？", "opts": ["必然", "不必然，应检查词义、参照、强度和感知差异", "两人都错", "咖啡一定有缺陷"], "ans": 1}, {"cat": "第6章｜校准、职业规范与综合应用", "q": "感官评价中的“客观”最合理的理解是？", "opts": ["人类感官可以完全没有主观性", "通过标准化、盲评、参照和重复等方法降低偏差、提高可重复性", "只让机器评分", "不允许写任何描述"], "ans": 1}, {"cat": "第7章｜综合强化", "q": "Affective评价结果可能因什么而变化？", "opts": ["市场偏好、使用场景、文化与个人价值判断", "只因豆目", "只因杯子颜色", "永远不会变化"], "ans": 0}, {"cat": "第7章｜综合强化", "q": "同一杯咖啡的高强度“发酵水果”描述，对不同买家可能？", "opts": ["必须得到相同价值判断", "可能得到不同的Affective评价", "不能被描述", "自动成为缺陷"], "ans": 1}, {"cat": "第7章｜综合强化", "q": "CVA的一个核心理念是？", "opts": ["咖啡价值只能由单一总分表达", "用多维信息更完整地理解咖啡价值", "取消感官描述", "只看产地"], "ans": 1}, {"cat": "第7章｜综合强化", "q": "外在属性信息在商业决策中？", "opts": ["可能影响价值，但应与杯中感官数据区分记录", "完全没用", "必须替代杯测", "必须隐藏到交易结束"], "ans": 0}, {"cat": "第7章｜综合强化", "q": "“高分=所有市场都愿意支付更高价格”这一说法？", "opts": ["总是正确", "过度简化，市场价值还受偏好、稀缺性、故事、供需等影响", "只对深烘焙正确", "只对水洗正确"], "ans": 1}, {"cat": "第7章｜综合强化", "q": "Q Grader进行专业评价时最重要的职业原则之一是？", "opts": ["根据客户期望修改结果", "独立、诚实、可重复地记录观察", "优先给知名产区高分", "只写正面词"], "ans": 1}, {"cat": "第7章｜综合强化", "q": "利益冲突最合理的处理方式是？", "opts": ["隐瞒", "识别并适当披露，避免影响评价公正性", "自动提高分数", "不需要考虑"], "ans": 1}, {"cat": "第7章｜综合强化", "q": "杯测时感冒鼻塞最可能影响？", "opts": ["嗅觉与整体风味判断", "生豆含水率", "咖啡产地", "烘焙机温度"], "ans": 0}, {"cat": "第7章｜综合强化", "q": "刚吃完非常辛辣或强烈风味食物后立即参加校准，可能？", "opts": ["暂时影响感官敏感度与判断", "提高准确性", "改变豆子品种", "没有任何可能影响"], "ans": 0}, {"cat": "第7章｜综合强化", "q": "吸烟或强烈气味暴露可能对杯测产生？", "opts": ["感官干扰", "豆目变化", "产地变化", "水硬度变化"], "ans": 0}, {"cat": "第7章｜综合强化", "q": "在考试或校准中，不确定某个描述词时最好的策略是？", "opts": ["选最华丽的词", "回到实际感知与已知参照，使用能够支持的描述", "抄别人", "根据产地猜"], "ans": 1}, {"cat": "第7章｜综合强化", "q": "根据产区名称预判“这杯一定有茉莉花香”属于？", "opts": ["可能的认知/预期偏差", "标准操作", "物理评估", "水质分析"], "ans": 0}, {"cat": "第7章｜综合强化", "q": "如果一个属性在所有重复杯中都稳定出现，这通常会？", "opts": ["增强对该观察可靠性的信心", "证明它一定是高品质", "证明价格高", "证明产地"], "ans": 0}, {"cat": "第7章｜综合强化", "q": "如果某个负面特征只出现在一只杯中，首先应考虑？", "opts": ["杯间不一致、局部缺陷或制备污染等可能性", "整批一定报废", "所有杯都同样有问题", "立即改分"], "ans": 0}, {"cat": "第7章｜综合强化", "q": "样品制备器具残留清洁剂气味会？", "opts": ["造成外源性污染并干扰评价", "提高甜度", "提高海拔", "改变品种"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "杯测勺在不同样品之间适当清洁的主要原因是？", "opts": ["降低交叉污染", "改变TDS", "提高咖啡因", "改变烘焙度"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "同一批杯测中杯具尺寸和形状保持一致主要为了？", "opts": ["控制制备和感官呈现变量", "让桌面好看", "改变产区", "提高价格"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "称量咖啡和水的意义主要是？", "opts": ["提高配方重复性", "让咖啡自动高分", "改变品种", "消除所有误差"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "计时在杯测协议中的作用是？", "opts": ["控制不同样品经历相近的浸泡和评价阶段", "只用于考试监考", "改变香气化学组成", "决定产地"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "若样品A总是第一个被品评，样品B总是最后一个，可能引入？", "opts": ["顺序效应", "品种效应", "海拔效应", "筛网效应"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "对比效应（contrast effect）是指？", "opts": ["前一个样品可能影响对后一个样品的感知或评价", "杯子颜色改变", "水温不变", "豆目一致"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "评价表中的数据应如何修改最合适？", "opts": ["保留清晰、可追溯的更正，不应为了迎合结果随意篡改", "擦掉所有原记录", "考后凭印象重写", "让别人代填"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "“描述词越稀有，Q Grader水平越高”这一说法？", "opts": ["正确", "错误，准确、可重复、可沟通比华丽词汇更重要", "只在考试正确", "只对瑰夏正确"], "ans": 1}, {"cat": "第8章｜综合强化", "q": "判断一个咖啡是否具有某风味属性时，应优先依据？", "opts": ["杯中实际感知", "包装文案", "价格", "产区名气"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "如果咖啡包装写着“草莓”，但盲评中没有感知到草莓，描述性记录应？", "opts": ["仍然必须写草莓", "按实际感知记录，不因包装强行添加", "自动扣分", "不记录任何风味"], "ans": 1}, {"cat": "第8章｜综合强化", "q": "Q Grader的价值更接近？", "opts": ["作为经过训练和校准的专业咖啡评价者，使用共同方法进行可靠沟通", "只负责给咖啡打一个固定分数", "只负责烘焙", "只负责采购"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "新版体系学习时，为什么不能只背旧版CQI表格分数逻辑？", "opts": ["因为新版强调CVA多维评价，需要理解描述、情感、外在和物理信息的区别", "因为咖啡不再杯测", "因为不再需要感官训练", "因为只考烘焙"], "ans": 0}, {"cat": "第8章｜综合强化", "q": "面对2026 Q Grader理论备考，最有效的方法是？", "opts": ["只背答案字母", "理解概念、协议目的、感官科学原理，并通过模拟题检验", "只背产区", "只练拉花"], "ans": 1}];
+</script>
+<script>
+(function(){
+  var BANK=window.BANK||[];
+  var CATS=[]; BANK.forEach(function(b){ if(CATS.indexOf(b.cat)<0)CATS.push(b.cat); });
+  var $=function(id){return document.getElementById(id);};
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  // 洗牌每题选项，重算 ans
+  function shuffleOpts(b){
+    var idxs=[0,1,2,3]; shuffle(idxs);
+    var oldOpts=b.opts, oldAns=b.ans;
+    b.opts=idxs.map(function(x){return oldOpts[x];});
+    b.ans=idxs.indexOf(oldAns);
+  }
+  
+  function closeModal(){$('modalMask').classList.add('hidden');}
+  function showAlert(msg, title, onOk){
+    $('modalTitle').textContent = title || '提示';
+    $('modalMsg').textContent = msg;
+    $('modalCancel').style.display = 'none';
+    $('modalOk').textContent = '知道了';
+    $('modalOk').onclick = function(){ closeModal(); if(onOk) onOk(); };
+    $('modalMask').classList.remove('hidden');
+  }
+  function showConfirm(msg, onYes, title){
+    $('modalTitle').textContent = title || '确认';
+    $('modalMsg').textContent = msg;
+    $('modalCancel').style.display = '';
+    $('modalOk').textContent = '确认';
+    $('modalCancel').textContent = '取消';
+    $('modalCancel').onclick = closeModal;
+    $('modalOk').onclick = function(){ closeModal(); if(onYes) onYes(); };
+    $('modalMask').classList.remove('hidden');
+  }
+
+  function switchView(v){['viewStart','viewQuiz','viewResult'].forEach(function(id){$(id).classList.add('hidden');});$(v).classList.remove('hidden');window.scrollTo(0,0);}
+
+
+  // ============ 累计统计与本地持久化 ============
+  var STORAGE_KEY = 'wb_quiz_history_v1';
+  function loadStats(){
+    try{ var s=localStorage.getItem(STORAGE_KEY); return s?JSON.parse(s):{rounds:0,total:0,right:0}; }catch(e){ return {rounds:0,total:0,right:0}; }
+  }
+  function saveStats(st){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(st)); }catch(e){} }
+  function renderStats(){
+    var st = loadStats();
+    $('statRounds').textContent = st.rounds;
+    $('statAnswered').textContent = st.total;
+    $('statPct').textContent = st.total ? Math.round(st.right/st.total*100)+'%' : '\u2014';
+  }
+  var sessionStartTs = 0;
+  var pendingEntry = null; // 待签名落盘的快照
+
+  function recordRound(total, right){
+    var st = loadStats();
+    st.rounds += 1;
+    st.total += total;
+    st.right += right;
+    saveStats(st);
+    renderStats();
+
+    var dur = sessionStartTs ? Math.round((Date.now() - sessionStartTs)/1000) : 0;
+    var cats = chosenCats.slice();
+    pendingEntry = {
+      id: 'r' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+      ts: Date.now(),
+      total: total,
+      right: right,
+      pct: total ? Math.round(right/total*100) : 0,
+      duration: dur,
+      cats: cats,
+      sig: ''
+    };
+    // 弹签名输入：跳过/确认 都走落盘逻辑
+    showSigModal(function(){
+      var arr = loadHistory();
+      arr.push(pendingEntry);
+      if(arr.length > 200) arr = arr.slice(arr.length-200);
+      saveHistory(arr);
+      renderHistory();
+      pendingEntry = null;
+    });
+  }
+
+  function showSigModal(onConfirm){
+    // 重用通用 modal：单输入 + 一个确认按钮
+    var box = document.createElement('div');
+    box.id = 'sigModal';
+    box.className = 'modal-mask';
+    box.innerHTML = '<div class="modal-box">'
+      + '<div class="modal-title">本轮成绩已生成\n要加签名吗？</div>'
+      + '<div class="modal-msg" style="margin-bottom:8px;color:var(--cream-dim)">签名会一起存进历史记录，跳过也可以以后点击修改。</div>'
+      + '<input type="text" class="modal-input" id="sigInput" maxlength="40" placeholder="输入签名（如姓名/周期）“”“”“”">'
+      + '<div class="modal-actions">'
+      +   '<button class="btn ghost" id="sigSkip">跳过</button>'
+      +   '<button class="btn primary" id="sigSave">保存签名</button>'
+      + '</div></div>';
+    document.body.appendChild(box);
+    var input = document.getElementById('sigInput');
+    var lastName = '';
+    try{ lastName = localStorage.getItem('wb_quiz_last_sig') || ''; }catch(e){}
+    input.value = lastName;
+    setTimeout(function(){ try{ input.focus(); input.select(); }catch(e){} }, 60);
+    function close(){
+      box.parentNode && box.parentNode.removeChild(box);
+      document.removeEventListener('keydown', onKey);
+    }
+    function onKey(e){
+      if(e.key==='Enter'){ e.preventDefault(); doSave(); }
+      else if(e.key==='Escape'){ e.preventDefault(); doSkip(); }
+    }
+    document.addEventListener('keydown', onKey);
+    function doSave(){
+      var v = (input.value || '').trim().slice(0,40);
+      if(pendingEntry) pendingEntry.sig = v;
+      try{ if(v) localStorage.setItem('wb_quiz_last_sig', v); }catch(e){}
+      close();
+      if(onConfirm) onConfirm();
+    }
+    function doSkip(){
+      try{ if(input.value) localStorage.setItem('wb_quiz_last_sig', input.value); }catch(e){}
+      close();
+      if(onConfirm) onConfirm();
+    }
+    document.getElementById('sigSave').onclick = doSave;
+    document.getElementById('sigSkip').onclick = doSkip;
+  }
+
+  // ============ 导出 JSON ============
+  function exportData(){
+    var st = loadStats();
+    var payload = {
+      _type: 'wb_quiz_backup',
+      _version: 2,
+      _exportedAt: new Date().toISOString(),
+      stats: st,
+      history: loadHistory(),
+      bankHash: BANK.length + ':' + (BANK[0]?BANK[0].q:'')
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    var ts = new Date().toISOString().replace(/[:T]/g,'-').slice(0,16);
+    a.href = url; a.download = '\u5496\u5561\u81ea\u6d4b_\u5907\u4efd_'+ts+'.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    $('backupHint').textContent = '\u5df2\u5bfc\u51fa ('+payload._exportedAt+')\uff1a\u7d2f\u8ba1 '+st.rounds+' \u8f6e / '+st.total+' \u9898 / \u6b63\u786e\u7387 '+(st.total?Math.round(st.right/st.total*100)+'%':'\u2014');
+  }
+
+  // ============ 导入恢复 ============
+  function importData(file){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        var data = JSON.parse(e.target.result);
+        if(!data || data._type !== 'wb_quiz_backup') throw new Error('\u6587\u4ef6\u683c\u5f0f\u4e0d\u5bf9');
+        if(!data.stats || typeof data.stats.rounds !== 'number') throw new Error('\u6570\u636e\u4e0d\u5b8c\u6574');
+        showConfirm('\u5c06\u8986\u76d6\u5f53\u524d\u6570\u636e\uff1a\u7d2f\u8ba1 '+loadStats().rounds+' \u8f6e / '+loadStats().total+' \u9898\u3002\n\u5bfc\u5165\u6587\u4ef6\uff1a\u7d2f\u8ba1 '+data.stats.rounds+' \u8f6e / '+data.stats.total+' \u9898\u3002\u662f\u5426\u7ee7\u7eed\uff1f', function(){
+          saveStats(data.stats);
+          renderStats();
+          $('backupHint').textContent = '\u5df2\u6062\u590d\uff1a\u7d2f\u8ba1 '+data.stats.rounds+' \u8f6e / '+data.stats.total+' \u9898 / \u6b63\u786e\u7387 '+(data.stats.total?Math.round(data.stats.right/data.stats.total*100)+'%':'\u2014');
+        }, '\u5bfc\u5165\u6062\u590d');
+      }catch(err){
+        showAlert('\u5bfc\u5165\u5931\u8d25\uff1a'+err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ============ 清空本地数据 ============
+  function clearData(){
+    showConfirm('\u786e\u5b9a\u8981\u6e05\u7a7a\u672c\u673a\u7684\u6240\u6709\u5b66\u4e60\u8bb0\u5f55\u5417\uff1f\u6b64\u64cd\u4f5c\u4e0d\u53ef\u64a4\u9500\uff0c\u5efa\u8bae\u5148\u5bfc\u51fa\u5907\u4efd\u3002', function(){
+      try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+      renderStats();
+      $('backupHint').textContent = '\u5df2\u6e05\u7a7a\u672c\u673a\u5b66\u4e60\u8bb0\u5f55';
+    }, '\u6e05\u7a7a\u6570\u636e');
+  }
+
+  // ============ 绑定事件 ============
+  $('btnExport').onclick = exportData;
+  $('btnImport').onclick = function(){ $('fileImport').click(); };
+  $('fileImport').onchange = function(e){ var f=e.target.files[0]; if(f) importData(f); e.target.value=''; };
+  $('btnClearData').onclick = clearData;
+  renderStats();
+
+
+  // ============ 历史成绩记录 ============
+  var HIST_KEY = 'wb_quiz_history_log_v1';
+  function loadHistory(){
+    try{ var s=localStorage.getItem(HIST_KEY); return s?JSON.parse(s):[]; }catch(e){ return []; }
+  }
+  function saveHistory(arr){ try{ localStorage.setItem(HIST_KEY, JSON.stringify(arr)); }catch(e){} }
+
+  function fmtDuration(sec){
+    if(!sec || sec<0) return '—';
+    var m=Math.floor(sec/60), s=sec%60;
+    return m>0 ? (m+'分'+s+'秒') : (s+'秒');
+  }
+  function fmtDateTime(ts){
+    var d=new Date(ts), p=function(n){return n<10?('0'+n):n;};
+    return d.getMonth()+1+'-'+d.getDate()+' '+p(d.getHours())+':'+p(d.getMinutes());
+  }
+  function rankHistory(arr){
+    var sorted = arr.slice().sort(function(a,b){
+        if(b.pct!==a.pct) return b.pct-a.pct;
+        return (a.duration||1e9) - (b.duration||1e9);
+      });
+    var rank = {};
+    sorted.forEach(function(r,i){ rank[r.id] = i+1; });
+    return {sorted: sorted, rank: rank};
+  }
+  function renderHistory(){
+    var arr = loadHistory();
+    var box = $('histList');
+    if(!arr.length){
+      box.innerHTML = '<div class="hist-empty">还没有成绩记录，去"开始答题"吧☕</div>';
+      if($('histHint')) $('histHint').textContent = '';
+      return;
+    }
+    var R = rankHistory(arr);
+    var h = '';
+    R.sorted.forEach(function(r){
+      var badgeCls = '', badgeText = R.rank[r.id];
+      if(R.rank[r.id]===1){ badgeCls='gold'; }
+      else if(R.rank[r.id]===2){ badgeCls='silver'; }
+      else if(R.rank[r.id]===3){ badgeCls='bronze'; }
+      var catsText = r.cats && r.cats.length ? (r.cats.length===1?r.cats[0]:('选 '+r.cats.length+'个章节')) : '全题库';
+      var sig = r.sig || '';
+      var sigText = sig ? ('✓ '+escapeHtml(sig)) : '+ 加签名';
+      var sigHtml = '<span class="hist-sig '+(sig?'':'empty')+'" data-edit-id="'+r.id+'" data-action="profile" title="点击查看历史排名">'+sigText+'</span>'
+        + '<span class="hist-sig-action" data-edit-id="'+r.id+'" data-action="edit" title="编辑签名">✎</span>'
+        + (sig ? '<span class="hist-sig-action danger" data-edit-id="'+r.id+'" data-action="delete" title="清除签名">✕</span>' : '');
+      h += '<div class="hist-item">'
+         +   '<div class="left">'
+         +     '<div class="rank-badge '+badgeCls+'">'+badgeText+'</div>'
+         +     '<div style="min-width:0">'
+         +       '<div style="font-weight:700">'+r.right+'/'+r.total+' <span style="color:var(--cream-dim);font-weight:400;font-size:11px">· '+fmtDateTime(r.ts)+'</span></div>'
+         +       '<div class="meta">'+catsText+' · 用时 '+fmtDuration(r.duration)+sigHtml+'</div>'
+         +     '</div>'
+         +   '</div>'
+         +   '<div class="right-meta">'
+         +     '<div class="pct">'+r.pct+'%</div>'
+         +     '<div class="pct-bar" style="margin-top:3px"><div class="f" style="width:'+r.pct+'%"></div></div>'
+         +   '</div>'
+         + '</div>';
+    });
+    box.innerHTML = h;
+    bindSigClicks();
+    // 不再写底部提示文字（与点击标题弹窗的全量历史成绩信息重复）
+    if($('histHint')) $('histHint').textContent = '';
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; });
+  }
+
+  function editSigById(id){
+    var arr = loadHistory();
+    var entry = null;
+    for(var i=0;i<arr.length;i++){ if(arr[i].id===id){ entry=arr[i]; break; } }
+    if(!entry) return;
+    showEditSigModal(entry.sig || '', function(newSig){
+      entry.sig = newSig;
+      saveHistory(arr);
+      renderHistory();
+    });
+  }
+
+  function showFullHistory(){
+    var arr = loadHistory();
+    if(!arr.length){
+      showAlert('暂无历史成绩，去答题吧 ☕');
+      return;
+    }
+    var total = arr.length;
+    var sumRight = 0, sumTotal = 0, sumDur = 0;
+    var max = {pct:-1}, min = {pct:101};
+    var sigSet = {};
+    var first = arr.slice().sort(function(a,b){return a.ts-b.ts;})[0];
+    var last = arr.slice().sort(function(a,b){return b.ts-a.ts;})[0];
+    arr.forEach(function(r){
+      sumRight += r.right; sumTotal += r.total; sumDur += (r.duration||0);
+      if(r.pct > max.pct) max = r;
+      if(r.pct < min.pct) min = r;
+      var s = (r.sig||'').trim();
+      if(s) sigSet[s] = (sigSet[s]||0) + 1;
+    });
+    var avgPct = sumTotal ? Math.round(sumRight/sumTotal*100) : 0;
+    var avgDur = Math.round(sumDur/total);
+    var sigCount = Object.keys(sigSet).length;
+
+    // 签名排行
+    var sigList = Object.keys(sigSet).map(function(s){
+      var ms = arr.filter(function(r){return (r.sig||'').trim()===s;});
+      var sr=0, st=0;
+      ms.forEach(function(r){ sr+=r.right; st+=r.total; });
+      return {name:s, count:ms.length, pct:st?Math.round(sr/st*100):0};
+    }).sort(function(a,b){ if(b.pct!==a.pct) return b.pct-a.pct; return b.count-a.count; });
+
+    // 按正确率排名
+    var sorted = arr.slice().sort(function(a,b){
+      if(b.pct!==a.pct) return b.pct-a.pct;
+      return (a.duration||1e9)-(b.duration||1e9);
+    });
+    var rank = {};
+    sorted.forEach(function(r,i){ rank[r.id] = i+1; });
+
+    var rowsHtml = sorted.map(function(r){
+      var rc = rank[r.id];
+      var bc = '';
+      if(rc===1) bc='gold'; else if(rc===2) bc='silver'; else if(rc===3) bc='bronze';
+      var sig = r.sig||'';
+      var sigBadge = sig
+        ? '<span class="prof-pill">✓ '+escapeHtml(sig)+'</span>'
+        : '<span class="prof-pill empty">无签名</span>';
+      return '<div class="prof-row">'
+        + '<div class="rank-badge '+bc+'">'+rc+'</div>'
+        + '<span class="prof-pct">'+r.pct+'%</span>'
+        + '<span class="prof-meta">'+r.right+'/'+r.total+' · '+fmtDateTime(r.ts)+' · 用时 '+fmtDuration(r.duration)+'</span>'
+        + sigBadge
+        + '</div>';
+    }).join('');
+
+    var sigRowsHtml = sigList.map(function(s){
+      return '<div class="prof-row"><span class="prof-pct">'+s.pct+'%</span><span class="prof-meta"><b>'+escapeHtml(s.name)+'</b> · '+s.count+' 轮 · 平均 '+s.pct+'%</span></div>';
+    }).join('');
+
+    var maxRow = max.pct>=0 ? '<div class="prof-summary-item"><span class="lbl-best">最佳</span><span>'+max.right+'/'+max.total+' · '+max.pct+'%</span></div>' : '';
+    var minRow = min.pct<=100 ? '<div class="prof-summary-item"><span class="lbl-worst">最差</span><span>'+min.right+'/'+min.total+' · '+min.pct+'%</span></div>' : '';
+
+    var html = ''
+      + '<div class="modal-box prof-box">'
+      + '<div class="prof-head">'
+      +   '<span class="prof-tag">历史</span>'
+      +   '<span class="prof-name">全量历史成绩</span>'
+      +   '<span class="prof-head-stat">共 '+total+' 轮</span>'
+      + '</div>'
+      + '<div class="prof-stats">'
+      +   '<div class="prof-stat"><span class="v">'+total+'</span><span class="l">总轮次</span></div>'
+      +   '<div class="prof-stat"><span class="v">'+avgPct+'%</span><span class="l">总平均</span></div>'
+      +   '<div class="prof-stat"><span class="v">'+fmtDuration(avgDur)+'</span><span class="l">平均用时</span></div>'
+      +   '<div class="prof-stat"><span class="v">'+sigCount+'</span><span class="l">签名人数</span></div>'
+      + '</div>'
+      + '<div class="prof-summary">'
+      +   maxRow
+      +   minRow
+      + '</div>'
+      + (sigCount ? '<div class="prof-list-title">签名排行</div><div class="prof-list">'+sigRowsHtml+'</div>' : '')
+      + '<div class="prof-list-title">全部轮次（按正确率排名）</div>'
+      + '<div class="prof-list prof-list-all">'+rowsHtml+'</div>'
+      + '<div class="modal-actions prof-actions">'
+      +   '<button class="btn ghost" id="fullClose">关闭</button>'
+      + '</div></div>';
+
+    var box = document.createElement('div');
+    box.className = 'modal-mask';
+    box.innerHTML = html;
+    document.body.appendChild(box);
+    document.getElementById('fullClose').onclick = function(){ box.parentNode && box.parentNode.removeChild(box); };
+    box.onclick = function(e){ if(e.target===box) box.parentNode && box.parentNode.removeChild(box); };
+  }
+
+  function showSigProfile(sig, fromId){
+    if(!mine.length){ return; }
+    var total = mine.length;
+    var sumRight = 0, sumTotal = 0, sumDur = 0, max = {pct:-1}, min = {pct:101};
+    mine.forEach(function(r){
+      sumRight += r.right; sumTotal += r.total; sumDur += (r.duration||0);
+      if(r.pct > max.pct) max = r;
+      if(r.pct < min.pct) min = r;
+    });
+    var avgPct = sumTotal ? Math.round(sumRight/sumTotal*100) : 0;
+    var avgDur = Math.round(sumDur/total);
+    var first = mine.slice().sort(function(a,b){return a.ts-b.ts;})[0];
+
+    // 历史列表按时间倒序
+    mine.sort(function(a,b){return b.ts-a.ts;});
+    var listHtml = mine.map(function(r){
+      var diff = '';
+      if(first && r.id !== first.id){
+        var days = Math.floor((r.ts - first.ts)/86400000);
+        if(days === 0) diff = '今日';
+        else if(days === 1) diff = '次日';
+        else if(days < 30) diff = days + ' 天后';
+        else if(days < 365) diff = Math.floor(days/30) + ' 个月后';
+        else diff = (days/365).toFixed(1) + ' 年后';
+      } else {
+        diff = '首次';
+      }
+      return '<div class="prof-row">'
+        + '<span class="prof-pct">' + r.pct + '%</span>'
+        + '<span class="prof-meta">' + r.right + '/' + r.total + ' · ' + fmtDateTime(r.ts) + ' · 用时 ' + fmtDuration(r.duration) + '</span>'
+        + '<span class="prof-diff">' + diff + '</span>'
+        + '</div>';
+    }).join('');
+
+    var maxRow = max.pct>=0 ? '<div class="prof-summary-item"><span class="lbl-best">最佳</span><span>'+max.right+'/'+max.total+' · '+max.pct+'%</span></div>' : '';
+    var minRow = min.pct<=100 ? '<div class="prof-summary-item"><span class="lbl-worst">最差</span><span>'+min.right+'/'+min.total+' · '+min.pct+'%</span></div>' : '';
+
+    var html = ''
+      + '<div class="modal-box prof-box">'
+      + '<div class="prof-head">'
+      +   '<span class="prof-tag">签名</span>'
+      +   '<span class="prof-name">' + escapeHtml(sig) + '</span>'
+      + '</div>'
+      + '<div class="prof-stats">'
+      +   '<div class="prof-stat"><span class="v">' + total + '</span><span class="l">轮次</span></div>'
+      +   '<div class="prof-stat"><span class="v">' + avgPct + '%</span><span class="l">平均</span></div>'
+      +   '<div class="prof-stat"><span class="v">' + fmtDuration(avgDur) + '</span><span class="l">平均用时</span></div>'
+      + '</div>'
+      + '<div class="prof-summary">'
+      +   maxRow
+      +   minRow
+      + '</div>'
+      + '<div class="prof-list-title">历史轮次（按时间倒序）</div>'
+      + '<div class="prof-list">' + listHtml + '</div>'
+      + '<div class="modal-actions prof-actions">'
+      +   '<button class="btn ghost" id="profEdit">编辑签名</button>'
+      +   '<button class="btn ghost" id="profDelete" style="color:#e06b5b;border-color:#7a3a2e">清除该签名</button>'
+      +   '<button class="btn primary" id="profClose">关闭</button>'
+      + '</div></div>';
+
+    var box = document.createElement('div');
+    box.className = 'modal-mask';
+    box.innerHTML = html;
+    document.body.appendChild(box);
+
+    function close(){ box.parentNode && box.parentNode.removeChild(box); }
+    document.getElementById('profClose').onclick = close;
+    box.onclick = function(e){ if(e.target === box) close(); };
+
+    document.getElementById('profEdit').onclick = function(){
+      var a2 = loadHistory();
+      var entry = null;
+      for(var i=0;i<a2.length;i++){ if(a2[i].id===fromId){ entry=a2[i]; break; } }
+      if(!entry) return;
+      close();
+      showEditSigModal(entry.sig || '', function(newSig){
+        entry.sig = newSig;
+        saveHistory(a2);
+        renderHistory();
+      });
+    };
+    document.getElementById('profDelete').onclick = function(){
+      close();
+      var a3 = loadHistory();
+      var n = 0;
+      a3.forEach(function(r){ if((r.sig||'').trim()===sig){ r.sig=''; n++; } });
+      saveHistory(a3);
+      renderHistory();
+      showAlert('已清除 '+n+' 条轮次的该签名');
+    };
+  }
+
+  function showEditSigModal(cur, onSave){
+    var box = document.createElement('div');
+    box.className = 'modal-mask';
+    box.innerHTML = '<div class="modal-box">'
+      + '<div class="modal-title">修改签名</div>'
+      + '<input type="text" class="modal-input" id="editSigInput" maxlength="40" placeholder="输入签名">'
+      + '<div class="modal-actions">'
+      +   '<button class="btn ghost" id="editSigDel">删除签名</button>'
+      +   '<button class="btn ghost" id="editSigCancel">取消</button>'
+      +   '<button class="btn primary" id="editSigSave">保存</button>'
+      + '</div></div>';
+    document.body.appendChild(box);
+    var input = document.getElementById('editSigInput');
+    input.value = cur;
+    setTimeout(function(){ try{ input.focus(); input.select(); }catch(e){} }, 60);
+    function close(){ box.parentNode && box.parentNode.removeChild(box); document.removeEventListener('keydown', onKey); }
+    function onKey(e){ if(e.key==='Enter'){ e.preventDefault(); doSave(); } else if(e.key==='Escape'){ e.preventDefault(); close(); } }
+    document.addEventListener('keydown', onKey);
+    function doSave(){ var v=(input.value||'').trim().slice(0,40); close(); onSave(v); }
+    function doDel(){ close(); onSave(''); }
+    document.getElementById('editSigSave').onclick = doSave;
+    document.getElementById('editSigCancel').onclick = close;
+    document.getElementById('editSigDel').onclick = doDel;
+  }
+
+  function bindSigClicks(){
+    var box = $('histList');
+    Array.prototype.forEach.call(box.querySelectorAll('[data-edit-id]'), function(el){
+      el.onclick = function(e){
+        e.stopPropagation();
+        var id = el.getAttribute('data-edit-id');
+        var action = el.getAttribute('data-action') || 'edit';
+        if(action === 'delete'){
+          var arr = loadHistory();
+          var entry = null;
+          for(var i=0;i<arr.length;i++){ if(arr[i].id===id){ entry=arr[i]; break; } }
+          if(!entry) return;
+          showConfirm('确认清除「'+entry.sig+'」这个签名吗？', function(){
+            entry.sig = '';
+            saveHistory(arr);
+            renderHistory();
+          }, '清除签名');
+        } else if(action === 'edit'){
+          // ✎ 编辑按钮：直接打开签名编辑 modal
+          editSigById(id);
+        } else if(action === 'profile'){
+          // 徽章本身：弹出签名历史排名卡片
+          var arr2 = loadHistory();
+          var entry2 = null;
+          for(var i=0;i<arr2.length;i++){ if(arr2[i].id===id){ entry2=arr2[i]; break; } }
+          if(!entry2 || !entry2.sig) return;
+          showSigProfile(entry2.sig, id);
+        }
+      };
+    });
+  }
+
+  function clearHistory(){
+    var arr = loadHistory();
+    if(!arr.length){ showAlert('没有可清除的历史记录'); return; }
+    showConfirm('确定要清空本机的全部 '+arr.length+' 轮记录吗？\n建议先导出备份，清除后不可恢复。', function(){
+      try{ localStorage.removeItem(HIST_KEY); }catch(e){}
+      renderHistory();
+      if($('histHint')) $('histHint').textContent = '已清空 '+arr.length+' 轮历史记录';
+    }, '清除历史成绩');
+  }
+
+  $('btnClearHistory').onclick = clearHistory;
+  $('histTitle').onclick = showFullHistory;
+  renderHistory();
+
+  // ---- 首页构建 ----
+  $('bankCount').textContent=BANK.length;
+  var chosenCount=20, chosenCats=[];
+  var numOpts=[{n:10,l:'快测'},{n:20,l:'小测'},{n:30,l:'中测'},{n:50,l:'大测'},{n:BANK.length,l:'全题库'}];
+  // 若题库小于最大档，自动收敛档位
+  numOpts=numOpts.filter(function(o){return o.n<=BANK.length;});
+  if(!numOpts.length)numOpts=[{n:BANK.length,l:'全题库'}];
+  if(chosenCount>numOpts[numOpts.length-1].n)chosenCount=numOpts[numOpts.length-1].n;
+    var numBox=$('numPick');
+  numOpts.forEach(function(o){
+    var d=document.createElement('div');d.className='num'+(o.n===chosenCount?' on':'');d.innerHTML='<b>'+o.n+'</b>'+o.l;
+    d.onclick=function(){chosenCount=o.n;Array.prototype.forEach.call(numBox.children,function(c,i){c.className='num'+(numOpts[i].n===chosenCount?' on':'');});};
+    numBox.appendChild(d);
+  });
+  var catBox=$('catPick');
+  CATS.forEach(function(c){
+    var ch=document.createElement('div');ch.className='chip';ch.textContent=c;
+    ch.onclick=function(){var i=chosenCats.indexOf(c);if(i>=0)chosenCats.splice(i,1);else chosenCats.push(c);
+      Array.prototype.forEach.call(catBox.children,function(x){x.className='chip'+(chosenCats.indexOf(x.textContent)>=0?' on':'');});};
+    catBox.appendChild(ch);
+  });
+  function pool(){return chosenCats.length?BANK.filter(function(b){return chosenCats.indexOf(b.cat)>=0;}):BANK.slice();}
+
+  // ---- 会话 ----
+  var session=[],answers=[],idx=0,wrongs=[];
+  var LETTERS=['A','B','C','D'];
+
+  function start(wrongQs){
+    var arr = wrongQs? BANK.filter(function(b){return wrongQs.indexOf(b.q)>=0;}) : pool();
+    arr=arr.slice();
+    if(!wrongQs){ arr=shuffle(arr); if(arr.length>chosenCount)arr=arr.slice(0,chosenCount); }
+    if(!arr.length){showAlert('\u5f53\u524d\u8303\u56f4\u6ca1\u6709\u53ef\u51fa\u9898\u7684\u9898\u76ee');return;}
+    sessionStartTs = Date.now();
+    arr.forEach(shuffleOpts);
+    session=arr;answers=new Array(session.length).fill(null);idx=0;
+    wrongs=[];switchView('viewQuiz');render();
+  }
+
+  function render(){
+    var total=session.length;
+    $('qTotal').textContent=total;$('qNow').textContent=idx+1;
+    var done=answers.filter(function(a){return a!==null;}).length;
+    $('scoreLive').textContent='已答 '+done+' / '+total;
+    $('progFill').style.width=((idx+1)/total*100)+'%';
+    var fb=$('fbBox');fb.className='feedback';fb.innerHTML='';
+    var b=session[idx];
+    $('qTag').textContent=b.cat;
+    $('catNow').textContent='章节：'+b.cat+'　·　本轮 '+total+' 题';
+    $('qText').textContent=''+(idx+1)+'. '+b.q;
+    var list=$('optList');list.innerHTML='';
+    b.opts.forEach(function(o,oi){
+      var d=document.createElement('div');d.className='opt';d.innerHTML='<span class="let">'+LETTERS[oi]+'</span><span>'+o+'</span>';
+      d.onclick=function(){if(answers[idx]===null){answers[idx]=oi;mark(idx,true);}};
+      list.appendChild(d);
+    });
+    if(answers[idx]!==null)mark(idx);
+    $('btnPrev').style.visibility=idx===0?'hidden':'visible';
+    $('btnNext').textContent=(idx===total-1)?'查看成绩 ✓':'下一题 →';
+  }
+
+  function mark(i,scroll){
+    var b=session[i],oi=answers[i],cur=b.ans;
+    var els=Array.prototype.slice.call($('optList').children);
+    var fb=$('fbBox');
+    els.forEach(function(e,j){
+      e.classList.remove('right','wrong','dim');
+      if(j===cur)e.classList.add('right');
+      else if(j===oi)e.classList.add('wrong');
+      else e.classList.add('dim');
+    });
+    if(oi===cur){fb.className='feedback ok show';fb.innerHTML='<b>✓ 回答正确</b>　答对了，继续保持。';}
+    else{fb.className='feedback no show';fb.innerHTML='<b>✗ 答错了</b><span class="right-ans">正确答案：【'+LETTERS[cur]+'】'+b.opts[cur]+'</span>';}
+    var done=answers.filter(function(a){return a!==null;}).length;
+    $('scoreLive').textContent='已答 '+done+' / '+session.length;
+    $('btnNext').textContent=(i===session.length-1)?'查看成绩 ✓':'下一题 →';
+    if(scroll){setTimeout(function(){fb.scrollIntoView({behavior:'smooth',block:'nearest'});},60);}
+  }
+
+  $('btnPrev').onclick=function(){if(idx>0){idx--;render();}};
+  $('btnNext').onclick=function(){
+    if(answers[idx]===null){showAlert('请先选择一个答案再继续');return;}
+    if(idx<session.length-1){idx++;render();}else{showResult();}
+  };
+  $('btnQuit').onclick=function(){showConfirm('提前结束本轮？将按已答题目计分。', function(){showResult();});};
+
+  function showResult(){
+    var total=session.length,right=0;wrongs=[];
+    session.forEach(function(b,i){if(answers[i]===b.ans)right++;else wrongs.push(b);});
+    var pct=total?Math.round(right/total*100):0;
+    $('scorePct').textContent=pct+'%';$('scoreFrac').textContent=right+' / '+total;
+    $('ring').style.setProperty('--p',(pct*3.6)+'deg');
+    var s='<div class="row2"><span>作答题数</span><span>'+total+'</span></div>'
+      +'<div class="row2"><span>答对</span><span style="color:#7fb069">'+right+'</span></div>'
+      +'<div class="row2"><span>答错</span><span style="color:#e06b5b">'+(total-right)+'</span></div>'
+      +'<div class="row2"><span>正确率</span><span style="color:#c89a63">'+pct+'%</span></div>';
+    var cmap={};session.forEach(function(b,i){(cmap[b.cat]=cmap[b.cat]||{t:0,r:0});cmap[b.cat].t++;if(answers[i]===b.ans)cmap[b.cat].r++;});
+    s+='<div class="lbl2">章节正确率</div>';
+    Object.keys(cmap).forEach(function(c){var v=cmap[c],pp=Math.round(v.r/v.t*100);
+      s+='<div class="csrow"><span class="name">'+c+'</span><div class="track"><div class="fill" style="width:'+pp+'%"></div></div><span class="pct">'+pp+'%</span></div>';});
+    $('resStats').innerHTML=s;
+    $('btnShowReview').textContent=wrongs.length?'错题回顾（'+wrongs.length+'）':'展开错题';
+    $('btnRetryWrong').style.display=wrongs.length?'':'none';
+    var rv=$('reviewBox');rv.classList.add('hidden');rv.innerHTML='';
+    recordRound(total, right);
+    switchView('viewResult');
+  }
+  var reviewOpen=false;
+  $('btnShowReview').onclick=function(){
+    var rv=$('reviewBox');
+    if(reviewOpen){rv.classList.add('hidden');reviewOpen=false;this.textContent=wrongs.length?'错题回顾（'+wrongs.length+'）':'错题回顾';return;}
+    if(!rv.innerHTML){
+      if(!wrongs.length){rv.innerHTML='<div class="empty-note">太棒了，本轮没有错题 ☕</div>';}
+      else{var h='';wrongs.forEach(function(b){h+='<div class="rev-item"><div class="rcat">'+b.cat+'</div><div class="rq">'+b.q+'</div><div class="ra">✔ 正确答案：【'+LETTERS[b.ans]+'】'+b.opts[b.ans]+'</div></div>';});rv.innerHTML=h;}
+    }
+    rv.classList.remove('hidden');reviewOpen=true;this.textContent='收起错题 ▲';
+  };
+  $('btnRetryWrong').onclick=function(){if(!wrongs.length)return;reviewOpen=false;$('reviewBox').classList.add('hidden');start(wrongs.map(function(b){return b.q;}));};
+  $('btnAgain').onclick=function(){reviewOpen=false;$('reviewBox').classList.add('hidden');start();};
+  $('btnHome').onclick=function(){switchView('viewStart');};
+  $('btnStart').onclick=function(){start();};
+  $('btnAll').onclick=function(){chosenCats=[];Array.prototype.forEach.call(catBox.children,function(x){x.className='chip';});start();};
+})();
+</script>
+</body>
+</html>
