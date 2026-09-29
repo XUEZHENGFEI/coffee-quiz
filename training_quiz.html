@@ -312,36 +312,7 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
     $('modalOk').onclick = function(){ closeModal(); if(onOk) onOk(); };
     $('modalMask').classList.remove('hidden');
   }
-  function askPassword(prompt, onOk, title){
-    var box = document.createElement('div');
-    box.className = 'modal-mask';
-    box.innerHTML = '<div class="modal-box">'
-      + '<div class="modal-title">'+(title||'需要密码')+'</div>'
-      + '<div class="modal-msg" style="margin-bottom:10px">'+(prompt||'请输入操作密码')+'</div>'
-      + '<input type="password" class="modal-input" id="pwInput" autocomplete="off" placeholder="输入密码">'
-      + '<div class="modal-actions">'
-      +   '<button class="btn ghost" id="pwCancel">取消</button>'
-      +   '<button class="btn primary" id="pwOk">确认</button>'
-      + '</div></div>';
-    document.body.appendChild(box);
-    var input = document.getElementById('pwInput');
-    setTimeout(function(){ try{ input.focus(); }catch(e){} }, 60);
-    function close(){ box.parentNode && box.parentNode.removeChild(box); document.removeEventListener('keydown', onKey); }
-    function onKey(e){
-      if(e.key==='Enter'){ e.preventDefault(); doOk(); }
-      else if(e.key==='Escape'){ e.preventDefault(); close(); }
-    }
-    document.addEventListener('keydown', onKey);
-    function doOk(){
-      var v = input.value || '';
-      close();
-      if(onOk) onOk(v);
-    }
-    document.getElementById('pwOk').onclick = doOk;
-    document.getElementById('pwCancel').onclick = close;
-  }
-
-  var ADMIN_PWD = 'Peets123';
+  
   function askPassword(prompt, onOk, title){
     var box = document.createElement('div');
     box.className = 'modal-mask';
