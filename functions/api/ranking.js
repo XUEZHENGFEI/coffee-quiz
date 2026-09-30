@@ -10,7 +10,7 @@ export async function onRequestGet({ request, env }) {
   };
 
   // 仪表板 HTML
-  if (url.pathname === '/api/board' || url.pathname === '/board') {
+  if (url.pathname === '/ranking/board' || url.pathname === '/ranking/board/') {
     return new Response(BOARD_HTML, {
       status: 200,
       headers: { 'Content-Type': 'text/html; charset=utf-8', ...CORS },
@@ -157,7 +157,7 @@ const BOARD_HTML = `<!DOCTYPE html>
 </div>
 
 <script>
-var DATA_URL = '/api/ranking';
+var DATA_URL = '/ranking';
 var data = null;
 
 function fmtDate(ts){if(!ts||ts<1e11)return'\u2014';var d=new Date(ts),p=function(n){return n<10?('0'+n):n;};return(d.getMonth()+1)+'-'+d.getDate()+' '+p(d.getHours())+':'+p(d.getMinutes());}
