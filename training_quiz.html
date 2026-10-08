@@ -627,6 +627,9 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
 
   // ============ 批量加题：xlsx/csv 解析 + 预览 + 导出 JS 片段 ============
   var parsedBankRows = null; // 当前解析出来的题目数组
+  function bankEsc(s){
+    return String(s||'').replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; });
+  }
   function handleBankFile(file){
     var hint = $('bankImportHint');
     hint.textContent = '正在解析 '+file.name+' ...';
@@ -742,15 +745,15 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
     var rowsHtml = items.slice(0, 50).map(function(r,i){
       return '<tr>'
         + '<td>'+(i+1)+'</td>'
-        + '<td>'+esc(r.cat)+'</td>'
-        + '<td>'+esc(r.q)+'</td>'
-        + '<td>'+esc(r.opts[r.ans])+'</td>'
+        + '<td>'+bankEsc(r.cat)+'</td>'
+        + '<td>'+bankEsc(r.q)+'</td>'
+        + '<td>'+bankEsc(r.opts[r.ans])+'</td>'
         + '<td>'+'ABCD'[r.ans]+'</td>'
         + '</tr>';
     }).join('');
     var moreNote = items.length > 50 ? '<div style="padding:8px;color:var(--cream-dim);font-size:12px">…还有 '+(items.length-50)+' 道未预览（导出时全部包含）</div>' : '';
     var errHtml = errors.length ? ('<div style="padding:8px;background:rgba(224,107,91,.1);border:1px solid var(--red);border-radius:8px;margin-bottom:8px;font-size:12px;color:var(--red)">'
-      + errors.map(function(e){return '⚠ '+esc(e);}).join('<br>') + '</div>') : '';
+      + errors.map(function(e){return '⚠ '+bankEsc(e);}).join('<br>') + '</div>') : '';
     box.innerHTML = '<div class="modal-box" style="max-width:760px;max-height:90vh;display:flex;flex-direction:column">'
       + '<div class="modal-title">📋 预览：'+esc(filename)+'</div>'
       + '<div class="modal-msg" style="white-space:normal">共解析 <b style="color:var(--gold)">'+ok+'</b> 道题'+ (bad?'（失败 <b style="color:var(--red)">'+bad+'</b>）':'')+'</div>'
