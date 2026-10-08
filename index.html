@@ -231,6 +231,7 @@
       <div class="row">
         <button class="btn ghost" id="btnBankImport" style="flex:1">📂 选择文件 (xlsx/csv)</button>
         <a class="btn ghost" id="btnBankTemplate" href="data/模板_咖啡题库导入.csv" download="模板_咖啡题库导入.csv" style="flex:1;text-decoration:none;display:inline-flex;align-items:center;justify-content:center">⬇ 下载模板</a>
+        <button class="btn ghost" id="btnExportAll" style="flex:1">📤 导出全量 CSV</button>
         <input type="file" id="fileBankImport" class="file-input" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
       </div>
       <div class="backup-hint" id="bankImportHint">未选择文件</div>
@@ -623,6 +624,7 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
     if(f) handleBankFile(f);
     e.target.value = '';
   };
+  $('btnExportAll').onclick = exportAllAsCsv;
   renderStats();
 
   // ============ 批量加题：xlsx/csv 解析 + 预览 + 导出 JS 片段 ============
@@ -803,6 +805,46 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
     document.body.appendChild(a); a.click();
     setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
     $('bankImportHint').innerHTML = '✅ 已导出 '+ok+' 道题到 <b>'+filename+'</b> → 存到项目 <code>data/</code> 目录 → <code>git add data/'+filename+' && git commit -m "新增题库" && git push origin main</code>';
+  }
+
+  // 导出全部题目为 CSV
+  function exportAllAsCsv(){
+    if(!window.BANK || !window.BANK.length){
+      $('bankImportHint').textContent = '当前没有题目可导出';
+      return;
+    }
+    var BOM = '\uFEFF';
+    var lines = ['章节,题目,选项A,选项B,选项C,选项D,答案(A/B/C/D)'];
+    window.BANK.forEach(function(r){
+      lines.push([
+        csvField(r.cat||''),
+        csvField(r.q||''),
+        csvField(r.opts[0]||''),
+        csvField(r.opts[1]||''),
+        csvField(r.opts[2]||''),
+        csvField(r.opts[3]||''),
+        'ABCD'[r.ans||0]
+      ].join(','));
+    });
+    var content = BOM + lines.join('\r\n');
+    var ts = new Date();
+    var pad = function(n){return n<10?('0'+n):n;};
+    var filename = '全量题库_'+(window.BANK.length)+'道_'+ts.getFullYear()+pad(ts.getMonth()+1)+pad(ts.getDate())+'.csv';
+    var blob = new Blob([content], {type:'text/csv;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+    $('bankImportHint').innerHTML = '✅ 已导出 <b>'+window.BANK.length+'</b> 道题到 <b>'+filename+'</b>（含 UTF-8 BOM，可直接用 Excel 打开）';
+  }
+
+  function csvField(s){
+    s = String(s==null?'':s);
+    if(s.indexOf(',')>=0 || s.indexOf('"')>=0 || s.indexOf('\n')>=0 || s.indexOf('\r')>=0){
+      return '"' + s.replace(/"/g,'""') + '"';
+    }
+    return s;
   }
 
 
