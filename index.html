@@ -699,12 +699,10 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
     }
     var header = rows[0].map(function(s){return String(s||'').trim();});
     var required = ['章节','题目','选项A','选项B','选项C','选项D','答案'];
-    // 兼容表头小写
-    var h = header.map(function(s){return s.toLowerCase().replace(/\s+/g,'');});
+    // 兼容表头小写 + 去除括号及括号内说明
+    var h = header.map(function(s){return s.toLowerCase().replace(/\s+/g,'').replace(/[（(].*?[)）]/g,'');});
     function col(name){
-      var idx = required.indexOf(name);
-      if(idx < 0) return -1;
-      var low = name.toLowerCase().replace(/\s+/g,'');
+      var low = name.toLowerCase().replace(/\s+/g,'').replace(/[（(].*?[)）]/g,'');
       return h.indexOf(low);
     }
     var cCat = col('章节'), cQ = col('题目');
