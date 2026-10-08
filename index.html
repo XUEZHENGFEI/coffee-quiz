@@ -755,7 +755,7 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
     var errHtml = errors.length ? ('<div style="padding:8px;background:rgba(224,107,91,.1);border:1px solid var(--red);border-radius:8px;margin-bottom:8px;font-size:12px;color:var(--red)">'
       + errors.map(function(e){return '⚠ '+bankEsc(e);}).join('<br>') + '</div>') : '';
     box.innerHTML = '<div class="modal-box" style="max-width:760px;max-height:90vh;display:flex;flex-direction:column">'
-      + '<div class="modal-title">📋 预览：'+esc(filename)+'</div>'
+      + '<div class="modal-title">📋 预览：'+bankEsc(filename)+'</div>'
       + '<div class="modal-msg" style="white-space:normal">共解析 <b style="color:var(--gold)">'+ok+'</b> 道题'+ (bad?'（失败 <b style="color:var(--red)">'+bad+'</b>）':'')+'</div>'
       + errHtml
       + '<div style="overflow:auto;flex:1;border:1px solid var(--line);border-radius:8px;margin-bottom:12px">'
