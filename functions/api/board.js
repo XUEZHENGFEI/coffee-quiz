@@ -58,6 +58,19 @@ export async function onRequestGet({ request, env }) {
   .toolbar input:focus{border-color:var(--gold)}
   .btn{background:transparent;border:1px solid var(--gold);color:var(--gold);font-size:13px;padding:8px 14px;border-radius:10px;cursor:pointer;font-family:inherit}
   .btn:hover{background:rgba(200,154,99,.12)}
+  .btn-danger{border-color:var(--red);color:var(--red)}
+  .btn-danger:hover{background:rgba(224,107,91,.12)}
+  .btn-ghost-sm{background:transparent;border:1px solid var(--line);color:var(--cream-dim);font-size:11px;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:inherit}
+  .btn-ghost-sm:hover{border-color:var(--red);color:var(--red)}
+  /* 密码弹窗 */
+  .pwd-mask{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;padding:18px}
+  .pwd-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:340px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+  .pwd-title{font-size:14px;font-weight:600;color:var(--cream);margin-bottom:10px;line-height:1.6;white-space:pre-line}
+  .pwd-input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--cream);font-family:inherit;font-size:14px;padding:10px 12px;border-radius:8px;outline:none;box-sizing:border-box;margin-bottom:8px}
+  .pwd-input:focus{border-color:var(--gold)}
+  .pwd-err{font-size:12px;color:var(--red);min-height:16px;margin-bottom:4px}
+  .pwd-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+  .pwd-actions .btn-ghost-sm{padding:8px 18px;font-size:13px}
   footer{text-align:center;color:#8a6c4f;font-size:11px;margin-top:20px;line-height:1.8}
   footer a{color:var(--gold);text-decoration:none}
   @media (max-width:600px){.grid{grid-template-columns:repeat(2,1fr)}.rank-badge{width:26px;height:26px;line-height:26px;font-size:12px}}
@@ -83,9 +96,10 @@ export async function onRequestGet({ request, env }) {
     <div class="toolbar">
       <input id="search" placeholder="🔍 按签名筛选（陶渊 / 培训部）">
       <button class="btn" id="refreshBtn">刷新</button>
+      <button class="btn btn-danger" id="clearAllBtn" title="清空全部匿名成绩（需密码）">🗑 清空</button>
     </div>
     <table>
-      <thead><tr><th class="rank">排名</th><th>签名</th><th>轮次</th><th>答对/总题</th><th>平均%</th><th>区间</th><th>最近</th></tr></thead>
+      <thead><tr><th class="rank">排名</th><th>签名</th><th>轮次</th><th>答对/总题</th><th>平均%</th><th>区间</th><th>最近</th><th style="width:80px">操作</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
     <div class="empty" id="empty" style="display:none">暂无数据 — 邀请同事开启"匿名贡献到全员榜"开关</div>
@@ -151,13 +165,72 @@ function render(){
       + '<td><div style="display:flex;align-items:center;gap:8px"><div class="pct">'+r.avg_pct+'%</div><div class="pct-bar"><div class="f" style="width:'+r.avg_pct+'%"></div></div></div></td>'
       + '<td class="right-meta">最低 '+r.min_pct+'%<br>最高 '+r.max_pct+'%</td>'
       + '<td class="right-meta">'+fmtDate(r.last_ts)+'</td>'
+      + '<td><button class="btn-ghost-sm row-del" data-sig="'+esc(r.sig)+'" title="删除该签名所有记录">删除</button></td>'
       + '</tr>';
   });
   tb.innerHTML = html;
+  // 行内"删除"按钮事件代理
+  Array.prototype.forEach.call(tb.querySelectorAll('.row-del'), function(b){
+    b.onclick = function(){ clearLeaderboard(b.getAttribute('data-sig')); };
+  });
 }
 
 document.getElementById('refreshBtn').onclick = load;
 document.getElementById('search').oninput = render;
+
+// ============ 密码弹窗 + 管理员操作 ============
+function showPwdModal(title, onConfirm){
+  var box = document.createElement('div');
+  box.className = 'pwd-mask';
+  box.innerHTML = '<div class="pwd-box">'
+    + '<div class="pwd-title">'+esc(title)+'</div>'
+    + '<input type="password" class="pwd-input" id="pwInput" placeholder="输入管理员密码" autocomplete="off">'
+    + '<div class="pwd-err" id="pwErr"></div>'
+    + '<div class="pwd-actions">'
+    +   '<button class="btn-ghost-sm" id="pwCancel">取消</button>'
+    +   '<button class="btn-ghost-sm" id="pwOk">确认</button>'
+    + '</div></div>';
+  document.body.appendChild(box);
+  var input = document.getElementById('pwInput');
+  setTimeout(function(){try{input.focus();}catch(e){}}, 60);
+  function close(){
+    box.parentNode && box.parentNode.removeChild(box);
+    document.removeEventListener('keydown', onKey);
+  }
+  function onKey(e){
+    if(e.key==='Enter'){e.preventDefault();doOk();}
+    else if(e.key==='Escape'){e.preventDefault();close();}
+  }
+  document.addEventListener('keydown', onKey);
+  function doOk(){
+    var v = input.value || '';
+    close();
+    if(onConfirm) onConfirm(v);
+  }
+  document.getElementById('pwOk').onclick = doOk;
+  document.getElementById('pwCancel').onclick = close;
+}
+
+function clearLeaderboard(sig){
+  var actionLabel = sig ? '删除签名「'+sig+'」的所有记录' : '清空全部匿名排行榜数据';
+  showPwdModal(actionLabel, async function(pwd){
+    if(!pwd){return;}
+    try{
+      var r = await fetch('/api/admin/clear', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({pwd: pwd, sig: sig || ''})
+      });
+      var j = await r.json();
+      if(!j.ok){alert(j.error||'操作失败');return;}
+      //alert('已删除 ' + j.deleted + ' 条记录');
+      load();
+    }catch(e){alert('请求失败：'+e.message);}
+  });
+}
+
+document.getElementById('clearAllBtn').onclick = function(){ clearLeaderboard(''); };
+
 load();
 setInterval(load, 30000);
 </script>
