@@ -412,6 +412,8 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
       if(arr.length > 200) arr = arr.slice(arr.length-200);
       saveHistory(arr);
       renderHistory();
+      // 匿名上报到全员排行榜（仅在用户开启 + 签名非空时）
+      submitToLeaderboard(pendingEntry);
       pendingEntry = null;
     });
   }
