@@ -74,6 +74,7 @@ export async function onRequestGet({ request, env }) {
   /* 加载更多 */
   .more-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 0;margin-top:8px;border-top:1px solid var(--line);font-size:13px;color:var(--cream-dim)}
   .more-bar b{color:var(--gold);font-weight:800}
+  .dur{display:inline-block;background:rgba(200,154,99,.15);color:var(--gold);font-size:12px;font-weight:700;padding:3px 10px;border-radius:8px;letter-spacing:.3px}
   footer{text-align:center;color:#8a6c4f;font-size:11px;margin-top:20px;line-height:1.8}
   footer a{color:var(--gold);text-decoration:none}
   @media (max-width:600px){.grid{grid-template-columns:repeat(2,1fr)}.rank-badge{width:26px;height:26px;line-height:26px;font-size:12px}}
@@ -102,7 +103,7 @@ export async function onRequestGet({ request, env }) {
       <button class="btn btn-danger" id="clearAllBtn" title="清空全部匿名成绩（需密码）">🗑 清空</button>
     </div>
     <table>
-      <thead><tr><th class="rank">排名</th><th>签名</th><th>轮次</th><th>答对/总题</th><th>平均%</th><th>区间</th><th>最近</th><th style="width:80px">操作</th></tr></thead>
+      <thead><tr><th class="rank">排名</th><th>签名</th><th>答对/总题</th><th>正确率</th><th style="width:80px">用时</th><th>时间</th><th style="width:80px">操作</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
     <div class="more-bar" id="moreBar" style="display:none">
@@ -123,6 +124,13 @@ var DATA_URL = '/api/ranking';
 var data = null;
 
 function fmtDate(ts){if(!ts||ts<1e11)return'—';var d=new Date(ts),p=function(n){return n<10?('0'+n):n;};return(d.getMonth()+1)+'-'+d.getDate()+' '+p(d.getHours())+':'+p(d.getMinutes());}
+function fmtDuration(sec){
+  sec = Math.max(0, parseInt(sec||0, 10));
+  if(sec < 60) return sec + '秒';
+  var m = Math.floor(sec/60), s = sec%60;
+  if(s === 0) return m + '分';
+  return m + '分' + s + '秒';
+}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
 
 async function load(){
@@ -148,9 +156,9 @@ function render(){
   document.getElementById('sSubmits').textContent = data.overall.total_submissions||0;
   document.getElementById('sSigners').textContent = data.overall.total_signers||0;
   var totalRight = 0, totalTotal = 0;
-  (data.items||[]).forEach(function(r){totalRight+=r.sum_right; totalTotal+=r.sum_total;});
+  (data.items||[]).forEach(function(r){totalRight+=r.right; totalTotal+=r.total;});
   document.getElementById('sAvg').textContent = totalTotal ? Math.round(totalRight/totalTotal*100)+'%' : '—';
-  document.getElementById('sTop').textContent = (data.items||[]).length ? (data.items[0].avg_pct+'%') : '—';
+  document.getElementById('sTop').textContent = (data.items||[]).length ? (data.items[0].pct+'%') : '—';
 
   var tb = document.getElementById('tbody');
   if(!items.length){
@@ -171,11 +179,10 @@ function render(){
     html += '<tr>'
       + '<td class="rank"><span class="rank-badge '+bc+'">'+(i+1)+'</span></td>'
       + '<td class="sig">'+esc(r.sig)+'</td>'
-      + '<td>'+r.rounds+'</td>'
-      + '<td>'+r.sum_right+'/'+r.sum_total+'</td>'
-      + '<td><div style="display:flex;align-items:center;gap:8px"><div class="pct">'+r.avg_pct+'%</div><div class="pct-bar"><div class="f" style="width:'+r.avg_pct+'%"></div></div></div></td>'
-      + '<td class="right-meta">最低 '+r.min_pct+'%<br>最高 '+r.max_pct+'%</td>'
-      + '<td class="right-meta">'+fmtDate(r.last_ts)+'</td>'
+      + '<td>'+r.right+'/'+r.total+'</td>'
+      + '<td><div style="display:flex;align-items:center;gap:8px"><div class="pct">'+r.pct+'%</div><div class="pct-bar"><div class="f" style="width:'+r.pct+'%"></div></div></div></td>'
+      + '<td><span class="dur">'+fmtDuration(r.duration)+'</span></td>'
+      + '<td class="right-meta">'+fmtDate(r.ts)+'</td>'
       + '<td><button class="btn-ghost-sm row-del" data-sig="'+esc(r.sig)+'" title="删除该签名所有记录">删除</button></td>'
       + '</tr>';
   });
@@ -190,7 +197,7 @@ function render(){
   document.getElementById('totalAll').textContent = items.length;
   if(visible.length < items.length){
     moreBar.style.display = 'flex';
-    document.getElementById('moreBtn').textContent = '加载更多（还有 '+(items.length-visible.length)+' 名）';
+    document.getElementById('moreBtn').textContent = '加载更多（还有 '+(items.length-visible.length)+' 条）';
   } else {
     moreBar.style.display = 'none';
   }

@@ -9,18 +9,10 @@ export async function onRequestGet({ request, env }) {
 
   try {
     const { results } = await env.COFFEE_QUIZ_DB.prepare(
-      `SELECT sig,
-              COUNT(*) AS rounds,
-              SUM(right) AS sum_right,
-              SUM(total) AS sum_total,
-              ROUND(AVG(pct)) AS avg_pct,
-              MIN(pct) AS min_pct,
-              MAX(pct) AS max_pct,
-              MAX(ts) AS last_ts
+      `SELECT sig, total, right, pct, duration, cats, ts
        FROM submissions
-       GROUP BY sig
-       ORDER BY avg_pct DESC, rounds DESC, sum_right DESC
-       LIMIT 100`
+       ORDER BY pct DESC, duration ASC, ts DESC
+       LIMIT 500`
     ).all();
 
     const overall = await env.COFFEE_QUIZ_DB.prepare(
