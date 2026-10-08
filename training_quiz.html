@@ -145,6 +145,12 @@
   .modal-actions .btn{flex:1;padding:12px;font-size:14px}
   .modal-input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--cream);font-family:inherit;font-size:14px;padding:10px 12px;border-radius:10px;margin-bottom:12px;outline:none;box-sizing:border-box}
   .modal-input:focus{border-color:var(--gold)}
+  /* 排行榜 toast 提示（非弹窗，底部横条） */
+  .lb-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9000;max-width:560px;width:calc(100% - 32px)}
+  .lb-toast-inner{background:var(--panel);border:1px solid var(--gold);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.5);font-size:13px;color:var(--cream)}
+  .lb-toast-inner span{flex:1;line-height:1.5}
+  .lb-toast-inner .btn{padding:6px 12px;font-size:12px;flex:none}
+  .lb-toast-inner .btn-ghost-sm{padding:6px 10px;font-size:12px;flex:none}
   .score-ring{width:150px;height:150px;margin:6px auto;border-radius:50%;
     background:conic-gradient(var(--gold) var(--p,0deg), rgba(255,255,255,.08) 0);
     display:flex;align-items:center;justify-content:center;position:relative}
@@ -224,7 +230,7 @@
       <div style="font-size:13px;color:var(--cream-dim);line-height:1.6;margin-bottom:8px">开启后，每次答完一轮会<strong style="color:var(--gold)">匿名</strong>提交分数（签名/分数/用时/章节/时间，不含 IP/错题号等隐私）。可随时关闭。</div>
       <div class="row">
         <button class="btn ghost" id="btnLeaderboardToggle" style="flex:1">📤 开启匿名贡献</button>
-        <a class="btn ghost" id="btnLeaderboardView" href="https://coffee-quiz-djc.pages.dev/api/ranking" target="_blank" style="flex:1;text-decoration:none;display:inline-flex;align-items:center;justify-content:center">📈 查看全员榜单</a>
+        <a class="btn ghost" id="btnLeaderboardView" href="https://coffee-quiz-djc.pages.dev/api/board" target="_blank" style="flex:1;text-decoration:none;display:inline-flex;align-items:center;justify-content:center">📈 查看全员榜单</a>
       </div>
       <div class="backup-hint" id="leaderboardHint"></div>
     </div>
@@ -412,6 +418,8 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
       if(arr.length > 200) arr = arr.slice(arr.length-200);
       saveHistory(arr);
       renderHistory();
+      // 匿名上报到全员排行榜（仅在用户开启 + 签名非空时）
+      submitToLeaderboard(pendingEntry);
       pendingEntry = null;
     });
   }
@@ -530,10 +538,23 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
   }
   function lbAskFirstTime(){
     if(localStorage.getItem(LB_KEY) !== null) return; // 已设置过
-    showConfirm('是否开启匿名贡献到全员排行榜？\n开启后每轮答题成绩（仅签名/分数/用时）会上传到公共榜单。\n任何时候可关闭，本机数据不影响。', function(){
+    // 用底部 toast 提示代替强制弹窗，避免挡住"开始答题"
+    var toast = document.createElement('div');
+    toast.className = 'lb-toast';
+    toast.innerHTML = '<div class="lb-toast-inner">'
+      + '<span>📤 想要答题成绩出现在全员排行榜吗？</span>'
+      + '<button class="btn" id="lbToastOn">开启匿名贡献</button>'
+      + '<button class="btn btn-ghost-sm" id="lbToastOff">暂不</button>'
+      + '</div>';
+    document.body.appendChild(toast);
+    document.getElementById('lbToastOn').onclick = function(){
       lbSetEnabled(true);
-      showAlert('已开启，下次答完一轮会自动匿名上报');
-    }, '匿名贡献排行榜');
+      toast.remove();
+    };
+    document.getElementById('lbToastOff').onclick = function(){
+      lbSetEnabled(false);
+      toast.remove();
+    };
   }
   function submitToLeaderboard(entry){
     if(!lbEnabled() || !entry || !entry.sig) return;
