@@ -71,6 +71,9 @@ export async function onRequestGet({ request, env }) {
   .pwd-err{font-size:12px;color:var(--red);min-height:16px;margin-bottom:4px}
   .pwd-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
   .pwd-actions .btn-ghost-sm{padding:8px 18px;font-size:13px}
+  /* 加载更多 */
+  .more-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 0;margin-top:8px;border-top:1px solid var(--line);font-size:13px;color:var(--cream-dim)}
+  .more-bar b{color:var(--gold);font-weight:800}
   footer{text-align:center;color:#8a6c4f;font-size:11px;margin-top:20px;line-height:1.8}
   footer a{color:var(--gold);text-decoration:none}
   @media (max-width:600px){.grid{grid-template-columns:repeat(2,1fr)}.rank-badge{width:26px;height:26px;line-height:26px;font-size:12px}}
@@ -102,6 +105,10 @@ export async function onRequestGet({ request, env }) {
       <thead><tr><th class="rank">排名</th><th>签名</th><th>轮次</th><th>答对/总题</th><th>平均%</th><th>区间</th><th>最近</th><th style="width:80px">操作</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
+    <div class="more-bar" id="moreBar" style="display:none">
+      <span id="moreHint">已显示前 <b id="curShow">0</b> 名（共 <b id="totalAll">0</b> 名）</span>
+      <button class="btn" id="moreBtn">加载更多</button>
+    </div>
     <div class="empty" id="empty" style="display:none">暂无数据 — 邀请同事开启"匿名贡献到全员榜"开关</div>
   </div>
 
@@ -125,6 +132,7 @@ async function load(){
     var j = await r.json();
     if(!j.ok) throw new Error(j.error||'fetch failed');
     data = j;
+    window._showCount = 20; // 每次刷新重置分页
     render();
     var d = new Date(j.updated_at);
     var p = function(n){return n<10?('0'+n):n;};
@@ -151,8 +159,11 @@ function render(){
     return;
   }
   document.getElementById('empty').style.display='none';
+  // 分页：默认显示前 20，点"加载更多"再 +20
+  var showCount = window._showCount || 20;
+  var visible = items.slice(0, showCount);
   var html = '';
-  items.forEach(function(r,i){
+  visible.forEach(function(r,i){
     var bc='';
     if(i===0) bc='gold';
     else if(i===1) bc='silver';
@@ -173,10 +184,24 @@ function render(){
   Array.prototype.forEach.call(tb.querySelectorAll('.row-del'), function(b){
     b.onclick = function(){ clearLeaderboard(b.getAttribute('data-sig')); };
   });
+  // 加载更多状态
+  var moreBar = document.getElementById('moreBar');
+  document.getElementById('curShow').textContent = visible.length;
+  document.getElementById('totalAll').textContent = items.length;
+  if(visible.length < items.length){
+    moreBar.style.display = 'flex';
+    document.getElementById('moreBtn').textContent = '加载更多（还有 '+(items.length-visible.length)+' 名）';
+  } else {
+    moreBar.style.display = 'none';
+  }
 }
 
 document.getElementById('refreshBtn').onclick = load;
 document.getElementById('search').oninput = render;
+document.getElementById('moreBtn').onclick = function(){
+  window._showCount = (window._showCount || 20) + 20;
+  render();
+};
 
 // ============ 密码弹窗 + 管理员操作 ============
 function showPwdModal(title, onConfirm){
