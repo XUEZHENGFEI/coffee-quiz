@@ -210,14 +210,14 @@
 <body data-page-node-id="HHFVgVm51ti0hb1z5wEmXe>
 
 <!-- 访问码门卫：未通过密码验证时整站隐藏 -->
-<div id="gateMask" class="gate-mask">
+<div class="gate-mask" data-role="gate">
   <div class="gate-box">
     <div class="gate-logo">☕</div>
     <div class="gate-title">Peets咖啡题库</div>
     <div class="gate-sub">请输入访问码以查看内容</div>
-    <input type="password" id="gateInput" class="gate-input" placeholder="••••••" autocomplete="off">
-    <div class="gate-err" id="gateErr"></div>
-    <button class="gate-btn" id="gateBtn">进入</button>
+    <input type="password" class="gate-input" data-role="gateInput" placeholder="••••••" autocomplete="off">
+    <div class="gate-err" data-role="gateErr"></div>
+    <button class="gate-btn" data-role="gateBtn">进入</button>
     <div class="gate-hint">7 天内不需要再次输入</div>
   </div>
 </div>
@@ -487,11 +487,10 @@ window.BANK=[
     try{ localStorage.setItem(GATE_KEY, JSON.stringify({exp: Date.now() + GATE_TTL})); }catch(e){}
   }
   function showMain(){
-    var m = document.getElementById('gateMask');
+    var m = document.querySelector('[data-role="gate"]');
     var w = document.getElementById('mainWrap');
     if(m) m.style.display = 'none';
     if(w) w.style.display = '';
-    // 触发原本在 IIFE 末尾的初始化
     if(typeof window.__wbPostGate === 'function'){
       try{ window.__wbPostGate(); }catch(e){}
     }
@@ -499,33 +498,34 @@ window.BANK=[
   function tryUnlock(){
     if(Date.now() < lockoutUntil){
       var left = Math.ceil((lockoutUntil - Date.now())/1000);
-      document.getElementById('gateErr').innerHTML = '<span class="gate-lockout">已锁定，请 '+left+' 秒后再试</span>';
+      var err = document.querySelector('[data-role="gateErr"]');
+      if(err) err.innerHTML = '<span class="gate-lockout">已锁定，请 '+left+' 秒后再试</span>';
       return;
     }
-    var v = (document.getElementById('gateInput').value || '').trim();
+    var input = document.querySelector('[data-role="gateInput"]');
+    var v = (input && input.value || '').trim();
     if(v === GATE_PWD){
       gateSave();
       showMain();
     } else {
       attempts++;
-      document.getElementById('gateInput').value = '';
-      document.getElementById('gateInput').focus();
+      if(input){ input.value=''; input.focus(); }
+      var err = document.querySelector('[data-role="gateErr"]');
       if(attempts >= 5){
         lockoutUntil = Date.now() + 30 * 1000;
-        document.getElementById('gateErr').innerHTML = '<span class="gate-lockout">5 次错误，锁定 30 秒</span>';
+        if(err) err.innerHTML = '<span class="gate-lockout">5 次错误，锁定 30 秒</span>';
       } else {
-        document.getElementById('gateErr').textContent = '访问码错误（'+attempts+'/5）';
+        if(err) err.textContent = '访问码错误（'+attempts+'/5）';
       }
     }
   }
-  // 立即判定
   if(gateOk()){
     showMain();
   } else {
     document.addEventListener('DOMContentLoaded', function(){
-      var i = document.getElementById('gateInput');
+      var i = document.querySelector('[data-role="gateInput"]');
       if(i) setTimeout(function(){ try{ i.focus(); }catch(e){} }, 100);
-      var b = document.getElementById('gateBtn');
+      var b = document.querySelector('[data-role="gateBtn"]');
       if(b) b.onclick = tryUnlock;
       if(i) i.onkeydown = function(e){
         if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }
