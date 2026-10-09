@@ -83,9 +83,8 @@ export async function onRequestGet({ request, env }) {
 <body>
 <div class="wrap">
   <header>
-    <div class="kicker">COFFEE QUIZ · 全员排行榜</div>
-    <h1>📊 全员匿名答题榜</h1>
-    <div class="sub">所有开启匿名贡献的同事数据汇总（仅签名/分数/用时，无隐私信息）</div>
+    <div class="kicker">啡正式嘉年华</div>
+    <h1>咖啡文化排行榜</h1>
     <div class="updated" id="updated">加载中...</div>
   </header>
 
