@@ -1,4 +1,6 @@
-_pg*.png
-_pg*
-_v.js
-
+# 临时调试文件
+_*.js
+_*.png
+*.log
+.DS_Store
+Thumbs.db
