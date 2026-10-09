@@ -35,7 +35,7 @@ export async function onRequestGet({ request, env }) {
   .wrap{max-width:900px;margin:0 auto;padding:20px 16px}
   header{text-align:center;padding:18px 0 24px}
   .kicker{color:#c89a63;font-size:12px;letter-spacing:4px;font-weight:700}
-  h1{font-size:30px;font-weight:800;margin:8px 0 4px;letter-spacing:2px;color:#f3e6d4}
+  h1{font-size:30px;font-weight:800;margin:8px 0 4px;letter-spacing:2px;color:#c89a63}
   .sub{color:var(--cream-dim);font-size:13px}
   .updated{font-size:11px;color:var(--cream-dim);margin-top:8px;opacity:.7}
   .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
