@@ -101,7 +101,7 @@ export async function onRequestGet({ request, env }) {
 
   <div class="card">
     <div class="toolbar">
-      <input id="search" placeholder="🔍 按签名筛选（陶渊 / 培训部）">
+      <input id="search" placeholder="🔍 按签名筛选">
       <button class="btn" id="refreshBtn">刷新</button>
       <button class="btn btn-danger" id="clearAllBtn" title="清空全部匿名成绩（需密码）">🗑 清空</button>
     </div>
