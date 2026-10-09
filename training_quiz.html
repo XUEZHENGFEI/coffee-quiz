@@ -209,18 +209,8 @@
 </head>
 <body data-page-node-id="HHFVgVm51ti0hb1z5wEmXe>
 
-<!-- 访问码门卫：最简形式（用 .gate-mask class 而非 data-* 属性，避免解析错位）-->
-<dialog id="wbGate" class="gate-mask">
-  <div class="gate-box">
-    <div class="gate-logo">☕</div>
-    <div class="gate-title">Peets咖啡题库</div>
-    <div class="gate-sub">请输入访问码以查看内容</div>
-    <input type="password" id="wbGateInput" class="gate-input" placeholder="••••••" autocomplete="off">
-    <div id="wbGateErr" class="gate-err"></div>
-    <button id="wbGateBtn" class="gate-btn">进入</button>
-    <div class="gate-hint">7 天内不需要再次输入</div>
-  </div>
-</dialog>
+<!-- 访问码门卫：完全用 JS 动态创建（避免 HTML 解析器边缘 case）-->
+<div id="wbGateHost"></div>
 
 <div class="wrap" id="mainWrap" style="display:none" data-page-node-id="Phfkd4InIwGF3lFiy7K5PH">
 
@@ -474,6 +464,29 @@ window.BANK=[
   var GATE_TTL = 7 * 24 * 60 * 60 * 1000;
   var GATE_PWD = 'Peets123';
   var attempts = 0;
+  var gateModal = null; // 动态创建的 dialog 元素
+
+  // 动态创建门卫（避免 HTML 解析器边缘 case）
+  function buildGate(){
+    if(document.getElementById('wbGate')) return document.getElementById('wbGate');
+    var d = document.createElement('dialog');
+    d.id = 'wbGate';
+    d.className = 'gate-mask';
+    d.innerHTML =
+      '<div class="gate-box">'
+      +'<div class="gate-logo">☕</div>'
+      +'<div class="gate-title">Peets咖啡题库</div>'
+      +'<div class="gate-sub">请输入访问码以查看内容</div>'
+      +'<input type="password" id="wbGateInput" class="gate-input" placeholder="••••••" autocomplete="off">'
+      +'<div id="wbGateErr" class="gate-err"></div>'
+      +'<button id="wbGateBtn" class="gate-btn">进入</button>'
+      +'<div class="gate-hint">7 天内不需要再次输入</div>'
+      +'</div>';
+    var host = document.getElementById('wbGateHost');
+    if(host) host.appendChild(d);
+    else document.body.appendChild(d);
+    return d;
+  }
   var lockoutUntil = 0;
   function gateOk(){
     try{
@@ -488,7 +501,7 @@ window.BANK=[
   }
   function showMain(){
     try{
-      var m = document.getElementById('wbGate');
+      var m = document.getElementById('wbGate') || gateModal;
       if(m){
         if(typeof m.close === 'function') try{ m.close(); }catch(e){}
         m.style.display = 'none';
@@ -499,12 +512,9 @@ window.BANK=[
         w.removeAttribute('style');
         w.style.display = '';
       }
-      // 保险：解 overflow 锁
       try{ document.documentElement.style.overflow = ''; }catch(e){}
       try{ document.body.style.overflow = ''; }catch(e){}
-    }catch(e){
-      console.error && console.error('showMain err:', e);
-    }
+    }catch(e){ console.error && console.error('showMain err:', e); }
     if(typeof window.__wbPostGate === 'function'){
       try{ window.__wbPostGate(); }catch(e){}
     }
@@ -538,8 +548,10 @@ window.BANK=[
   } else {
     document.addEventListener('DOMContentLoaded', function(){
       try{
-        var d = document.getElementById('wbGate');
-        if(d && typeof d.showModal === 'function') try{ d.showModal(); }catch(e){}
+        gateModal = buildGate();
+        if(gateModal && typeof gateModal.showModal === 'function'){
+          try{ gateModal.showModal(); }catch(e){}
+        }
         var i = document.getElementById('wbGateInput');
         if(i) setTimeout(function(){ try{ i.focus(); }catch(e){} }, 100);
         var b = document.getElementById('wbGateBtn');
