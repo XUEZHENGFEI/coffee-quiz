@@ -210,7 +210,7 @@
 <body data-page-node-id="HHFVgVm51ti0hb1z5wEmXe>
 
 <!-- 访问码门卫：最简形式（用 .gate-mask class 而非 data-* 属性，避免解析错位）-->
-<div class="gate-mask" id="wbGate">
+<dialog id="wbGate" class="gate-mask">
   <div class="gate-box">
     <div class="gate-logo">☕</div>
     <div class="gate-title">Peets咖啡题库</div>
@@ -220,7 +220,7 @@
     <button id="wbGateBtn" class="gate-btn">进入</button>
     <div class="gate-hint">7 天内不需要再次输入</div>
   </div>
-</div>
+</dialog>
 
 <div class="wrap" id="mainWrap" style="display:none" data-page-node-id="Phfkd4InIwGF3lFiy7K5PH">
 
@@ -487,23 +487,24 @@ window.BANK=[
     try{ localStorage.setItem(GATE_KEY, JSON.stringify({exp: Date.now() + GATE_TTL})); }catch(e){}
   }
   function showMain(){
-    var m = document.getElementById('wbGate');
-    var w = document.getElementById('mainWrap');
-    if(m){
-      m.style.display = 'none';
-      m.setAttribute('aria-hidden', 'true');
-      try{ m.remove(); }catch(e){}
+    try{
+      var m = document.getElementById('wbGate');
+      if(m){
+        if(typeof m.close === 'function') try{ m.close(); }catch(e){}
+        m.style.display = 'none';
+        try{ m.remove(); }catch(e){}
+      }
+      var w = document.getElementById('mainWrap');
+      if(w){
+        w.removeAttribute('style');
+        w.style.display = '';
+      }
+      // 保险：解 overflow 锁
+      try{ document.documentElement.style.overflow = ''; }catch(e){}
+      try{ document.body.style.overflow = ''; }catch(e){}
+    }catch(e){
+      console.error && console.error('showMain err:', e);
     }
-    if(w){
-      w.removeAttribute('style');
-      w.style.display = '';
-    }
-    // 解除 body 上的 inline style（如被错误附加的）
-    if(document.body.getAttribute('style') && document.body.getAttribute('style').indexOf('display')>=0){
-      document.body.removeAttribute('style');
-    }
-    document.documentElement.style.overflow = '';
-    document.body.style.overflow = '';
     if(typeof window.__wbPostGate === 'function'){
       try{ window.__wbPostGate(); }catch(e){}
     }
@@ -536,13 +537,17 @@ window.BANK=[
     showMain();
   } else {
     document.addEventListener('DOMContentLoaded', function(){
-      var i = document.getElementById('wbGateInput');
-      if(i) setTimeout(function(){ try{ i.focus(); }catch(e){} }, 100);
-      var b = document.getElementById('wbGateBtn');
-      if(b) b.onclick = tryUnlock;
-      if(i) i.onkeydown = function(e){
-        if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }
-      };
+      try{
+        var d = document.getElementById('wbGate');
+        if(d && typeof d.showModal === 'function') try{ d.showModal(); }catch(e){}
+        var i = document.getElementById('wbGateInput');
+        if(i) setTimeout(function(){ try{ i.focus(); }catch(e){} }, 100);
+        var b = document.getElementById('wbGateBtn');
+        if(b) b.onclick = tryUnlock;
+        if(i) i.onkeydown = function(e){
+          if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }
+        };
+      }catch(e){ console.error && console.error('gate init err:', e); }
     });
   }
 })();
