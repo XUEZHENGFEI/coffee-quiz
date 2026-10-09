@@ -647,11 +647,30 @@ window.BANK=[{"cat": "SCA杯测标准", "q": "SCA杯测中每杯咖啡的标准�
   function parseCsvFile(file){
     var fr = new FileReader();
     fr.onload = function(e){
-      var text = e.target.result;
+      var buf = e.target.result;
+      var text = decodeCsvBuffer(buf);
       var rows = csvToRows(text);
       onBankRowsReady(rows, file.name);
     };
-    fr.readAsText(file, 'utf-8');
+    fr.readAsArrayBuffer(file);
+  }
+  // 智能探测 GBK / UTF-8 / UTF-8 BOM
+  function decodeCsvBuffer(buf){
+    var bytes = new Uint8Array(buf);
+    // UTF-8 BOM
+    if(bytes.length >= 3 && bytes[0]===0xEF && bytes[1]===0xBB && bytes[2]===0xBF){
+      try{ return new TextDecoder('utf-8').decode(bytes); }catch(e){}
+    }
+    // 试 UTF-8 解码（如果全是 ASCII 或合法 UTF-8 也成功）
+    try{
+      var utf8 = new TextDecoder('utf-8', {fatal:true}).decode(bytes);
+      return utf8;
+    }catch(e){}
+    // 退回 GBK
+    try{ return new TextDecoder('gbk').decode(bytes); }catch(e){}
+    // 最后兜底 latin1
+    try{ return new TextDecoder('gb18030').decode(bytes); }catch(e){}
+    return new TextDecoder('utf-8').decode(bytes);
   }
   function parseXlsxFile(file){
     if(typeof DecompressionStream === 'undefined'){
