@@ -489,8 +489,22 @@ window.BANK=[
   function showMain(){
     var m = document.querySelector('[data-role="gate"]');
     var w = document.getElementById('mainWrap');
-    if(m) m.style.display = 'none';
-    if(w) w.style.display = '';
+    if(m){
+      // 彻底移除门卫（不只是隐藏），防止任何层叠干扰
+      m.style.display = 'none';
+      m.setAttribute('aria-hidden', 'true');
+      try{ m.remove(); }catch(e){}
+    }
+    if(w){
+      w.removeAttribute('style');
+      w.style.display = '';
+    }
+    // 双重保险：解除 body 上的 inline style（如被错误附加的）
+    if(document.body.getAttribute('style') && document.body.getAttribute('style').indexOf('display')>=0){
+      document.body.removeAttribute('style');
+    }
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
     if(typeof window.__wbPostGate === 'function'){
       try{ window.__wbPostGate(); }catch(e){}
     }
