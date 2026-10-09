@@ -230,7 +230,7 @@
       <div style="font-size:13px;color:var(--cream-dim);line-height:1.6;margin-bottom:8px">上传 <strong style="color:var(--gold)">xlsx 或 csv</strong>（用我们提供的模板），浏览器解析后预览，确认无误后导出 JS 片段，存进项目根目录 <code>data/</code> + <code>git push</code> 即可全员生效。</div>
       <div class="row">
         <button class="btn ghost" id="btnBankImport" style="flex:1">📂 选择文件 (xlsx/csv)</button>
-        <a class="btn ghost" id="btnBankTemplate" href="data/模板_咖啡题库导入.csv" download="模板_咖啡题库导入.csv" style="flex:1;text-decoration:none;display:inline-flex;align-items:center;justify-content:center">⬇ 下载模板</a>
+        <button class="btn ghost" id="btnBankTemplate" style="flex:1">⬇ 下载模板</button>
         <button class="btn ghost" id="btnExportAll" style="flex:1">📤 导出全量 CSV</button>
         <input type="file" id="fileBankImport" class="file-input" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
       </div>
@@ -726,7 +726,9 @@ window.BANK=[
     if(f) handleBankFile(f);
     e.target.value = '';
   };
-  $('btnExportAll').onclick = exportAllAsCsv;
+  $('btnExportAll').onclick = function(){ adminCheck('导出全量题目 CSV（包含 101 道完整答案字段）', exportAllAsCsv); };
+  $('btnBankTemplate').onclick = function(){ adminCheck('下载加题模板', downloadTemplateCsv); };
+  $('btnBankImport').onclick = function(){ adminCheck('上传文件批量加题', function(){ $('fileBankImport').click(); }); };
   renderStats();
 
   // ============ 批量加题：xlsx/csv 解析 + 预览 + 导出 JS 片段 ============
@@ -966,6 +968,35 @@ window.BANK=[
       return '"' + s.replace(/"/g,'""') + '"';
     }
     return s;
+  }
+
+  // ============ 管理员操作密码保护 ============
+  function adminCheck(actionLabel, onOk){
+    askPassword('请输入管理员密码以'+actionLabel, function(pwd){
+      if(pwd !== ADMIN_PWD){ showAlert('密码错误，操作已取消'); return; }
+      onOk();
+    }, '管理员验证');
+  }
+
+  // 下载模板（嵌入的固定内容，4 行示例）
+  function downloadTemplateCsv(){
+    var BOM = '\uFEFF';
+    var sample = [
+      ['章节','题目','选项A','选项B','选项C','选项D','答案(A/B/C/D)'],
+      ['单一产地咖啡-埃塞俄比亚 耶加雪菲','埃塞俄比亚 耶加雪菲 这款单一产地咖啡的烘焙度是？','浅度烘焙','中度烘焙','深度烘焙','法式烘焙','C'],
+      ['单一产地咖啡-埃塞俄比亚 耶加雪菲','埃塞俄比亚 耶加雪菲 的官方风味描述是？','芬芳的薰衣草香气，明亮而优雅的柑橘风味以及悠长的香料余韵','香甜的烤坚果与浓郁可可风味，饱满而醇厚','成熟的黑布林风味，黑糖甜感中带有一丝香料的余韵','烤苹果和海盐焦糖风味、伴随肉桂与巧克力的余韵','A'],
+      ['拼配咖啡-迪克森少校','【示例】请填你自己的题目','选项A','选项B','选项C','选项D','A'],
+      ['咖啡基础-萃取','【示例】意式浓缩的萃取时间一般是？','15-20秒','20-30秒','30-45秒','60秒以上','B']
+    ];
+    var lines = sample.map(function(r){ return r.map(csvField).join(','); });
+    var content = BOM + lines.join('\r\n');
+    var blob = new Blob([content], {type:'text/csv;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = '模板_咖啡题库导入.csv';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+    $('bankImportHint').innerHTML = '✅ 已下载模板（含 4 行示例）→ 用 Excel 打开后填新题 → 回到「📂 选择文件」上传';
   }
 
 
