@@ -86,6 +86,22 @@
   .foot-nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
   .foot-nav .btn{flex:0 0 auto;padding:12px 22px;font-size:14px}
 
+  /* 访问码门卫 */
+  .gate-mask{position:fixed;inset:0;background:linear-gradient(135deg,#f5e8d3 0%,#fdf3e3 100%);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px}
+  .gate-box{background:#fff;border:1px solid #e6d3b3;border-radius:24px;padding:32px 36px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(169,122,66,.18);text-align:center}
+  .gate-logo{font-size:42px;margin-bottom:8px;line-height:1}
+  .gate-title{font-size:22px;font-weight:800;color:#3a2517;margin-bottom:4px;letter-spacing:1px}
+  .gate-sub{color:#8b6332;font-size:13px;margin-bottom:24px;line-height:1.6}
+  .gate-input{width:100%;background:#faf1e3;border:2px solid #e6d3b3;border-radius:12px;padding:14px 16px;font-size:16px;color:#3a2517;font-family:inherit;outline:none;text-align:center;letter-spacing:4px;box-sizing:border-box;margin-bottom:12px}
+  .gate-input:focus{border-color:#c89a63;background:#fff}
+  .gate-input::placeholder{color:#c89a63;letter-spacing:1px;font-size:13px}
+  .gate-btn{width:100%;background:linear-gradient(135deg,#c89a63,#a97a42);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:1px;box-shadow:0 6px 18px rgba(169,122,66,.3);transition:.2s}
+  .gate-btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(169,122,66,.4)}
+  .gate-btn:active{transform:translateY(0)}
+  .gate-err{color:#d9543f;font-size:12px;min-height:18px;margin-bottom:8px}
+  .gate-hint{color:#c89a63;font-size:11px;margin-top:14px;line-height:1.6}
+  .gate-lockout{color:#d9543f}
+  .hidden{display:none!important}
   /* 累计进度条 */
   .stats-bar{display:flex;justify-content:space-between;gap:6px;margin:10px 12px 0;font-size:12px;color:var(--cream-dim)}
   .stats-bar .v{color:var(--coral);font-weight:800;font-size:15px;display:block;margin-top:2px}
@@ -191,8 +207,22 @@
   @media(min-width:760px){h1{font-size:30px}}
 </style>
 </head>
-<body data-page-node-id="HHFVgVm51ti0hb1z5wEmXe">
-<div class="wrap" data-page-node-id="Phfkd4InIwGF3lFiy7K5PH">
+<body data-page-node-id="HHFVgVm51ti0hb1z5wEmXe>
+
+<!-- 访问码门卫：未通过密码验证时整站隐藏 -->
+<div id="gateMask" class="gate-mask">
+  <div class="gate-box">
+    <div class="gate-logo">☕</div>
+    <div class="gate-title">Peets咖啡题库</div>
+    <div class="gate-sub">请输入访问码以查看内容</div>
+    <input type="password" id="gateInput" class="gate-input" placeholder="••••••" autocomplete="off">
+    <div class="gate-err" id="gateErr"></div>
+    <button class="gate-btn" id="gateBtn">进入</button>
+    <div class="gate-hint">7 天内不需要再次输入</div>
+  </div>
+</div>
+
+<div class="wrap" id="mainWrap" style="display:none" data-page-node-id="Phfkd4InIwGF3lFiy7K5PH">
 
   <!-- 首页 -->
   <div id="viewStart" data-page-node-id="6HlL1DjUQeYUXwByzGzH6F">
@@ -438,6 +468,72 @@ window.BANK=[
 ];
 </script>
 <script>
+// ============ 访问码门卫（7 天记住）============
+(function(){
+  var GATE_KEY = 'wb_coffee_gate_v1';
+  var GATE_TTL = 7 * 24 * 60 * 60 * 1000;
+  var GATE_PWD = 'Peets123';
+  var attempts = 0;
+  var lockoutUntil = 0;
+  function gateOk(){
+    try{
+      var v = localStorage.getItem(GATE_KEY);
+      if(!v) return false;
+      var o = JSON.parse(v);
+      return o && o.exp > Date.now();
+    }catch(e){ return false; }
+  }
+  function gateSave(){
+    try{ localStorage.setItem(GATE_KEY, JSON.stringify({exp: Date.now() + GATE_TTL})); }catch(e){}
+  }
+  function showMain(){
+    var m = document.getElementById('gateMask');
+    var w = document.getElementById('mainWrap');
+    if(m) m.style.display = 'none';
+    if(w) w.style.display = '';
+    // 触发原本在 IIFE 末尾的初始化
+    if(typeof window.__wbPostGate === 'function'){
+      try{ window.__wbPostGate(); }catch(e){}
+    }
+  }
+  function tryUnlock(){
+    if(Date.now() < lockoutUntil){
+      var left = Math.ceil((lockoutUntil - Date.now())/1000);
+      document.getElementById('gateErr').innerHTML = '<span class="gate-lockout">已锁定，请 '+left+' 秒后再试</span>';
+      return;
+    }
+    var v = (document.getElementById('gateInput').value || '').trim();
+    if(v === GATE_PWD){
+      gateSave();
+      showMain();
+    } else {
+      attempts++;
+      document.getElementById('gateInput').value = '';
+      document.getElementById('gateInput').focus();
+      if(attempts >= 5){
+        lockoutUntil = Date.now() + 30 * 1000;
+        document.getElementById('gateErr').innerHTML = '<span class="gate-lockout">5 次错误，锁定 30 秒</span>';
+      } else {
+        document.getElementById('gateErr').textContent = '访问码错误（'+attempts+'/5）';
+      }
+    }
+  }
+  // 立即判定
+  if(gateOk()){
+    showMain();
+  } else {
+    document.addEventListener('DOMContentLoaded', function(){
+      var i = document.getElementById('gateInput');
+      if(i) setTimeout(function(){ try{ i.focus(); }catch(e){} }, 100);
+      var b = document.getElementById('gateBtn');
+      if(b) b.onclick = tryUnlock;
+      if(i) i.onkeydown = function(e){
+        if(e.key === 'Enter'){ e.preventDefault(); tryUnlock(); }
+      };
+    });
+  }
+})();
+
 (function(){
   var BANK=window.BANK||[];
   var CATS=[]; BANK.forEach(function(b){ if(CATS.indexOf(b.cat)<0)CATS.push(b.cat); });
@@ -1478,6 +1574,16 @@ window.BANK=[
   $('btnHome').onclick=function(){switchView('viewStart');};
   $('btnStart').onclick=function(){start();};
   $('btnAll').onclick=function(){chosenCats=[];Array.prototype.forEach.call(catBox.children,function(x){x.className='chip';});start();};
+  // 暴露初始化钩子，门卫通过后调用
+  window.__wbPostGate = function(){
+    if(typeof renderStats === 'function') renderStats();
+    if(typeof renderHistory === 'function') renderHistory();
+    if(typeof lbAskFirstTime === 'function') lbAskFirstTime();
+  };
+  // 如果门卫已通过（localStorage 有记录），立即执行
+  if((function(){try{var v=localStorage.getItem('wb_coffee_gate_v1');if(!v)return false;var o=JSON.parse(v);return o && o.exp>Date.now();}catch(e){return false;}})()){
+    try{ window.__wbPostGate(); }catch(e){}
+  }
 })();
 </script>
 </body>
