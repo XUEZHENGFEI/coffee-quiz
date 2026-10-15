@@ -143,7 +143,7 @@ async function load(){
     var j = await r.json();
     if(!j.ok) throw new Error(j.error||'fetch failed');
     data = j;
-    window._showCount = 20; // 每次刷新重置分页
+    window._showCount = 50; // 每次刷新重置分页
     render();
     var d = new Date(j.updated_at);
     var p = function(n){return n<10?('0'+n):n;};
@@ -171,7 +171,7 @@ function render(){
   }
   document.getElementById('empty').style.display='none';
   // 分页：默认显示前 20，点"加载更多"再 +20
-  var showCount = window._showCount || 20;
+  var showCount = window._showCount || 50;
   var visible = items.slice(0, showCount);
   var html = '';
   visible.forEach(function(r,i){
@@ -209,7 +209,7 @@ function render(){
 document.getElementById('refreshBtn').onclick = load;
 document.getElementById('search').oninput = render;
 document.getElementById('moreBtn').onclick = function(){
-  window._showCount = (window._showCount || 20) + 20;
+  window._showCount = (window._showCount || 50) + 50;
   render();
 };
 
